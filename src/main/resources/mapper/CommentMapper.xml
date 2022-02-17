@@ -5,7 +5,7 @@
 <mapper namespace="com.yegetables.dao.CommentMapper">
     <resultMap id="commentsResultMap" type="comment">
         <id property="coid" column="coid"/>
-        <result property="created" column="created" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result property="created" column="created" typeHandler="com.yegetables.utils.TimestampTypeHandler"/>
         <result property="authorName" column="author"/>
         <result property="authorId" column="authorId"/>
         <result property="email" column="mail"/>

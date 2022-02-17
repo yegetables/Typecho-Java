@@ -1,4 +1,4 @@
-package com.yegetables.dao;
+package com.yegetables.utils;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;

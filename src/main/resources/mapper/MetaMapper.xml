@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.MetaMapper">
+    <resultMap id="metasResultMap" type="meta">
+        <id property="mid" column="mid"/>
+        <result property="name" column="name"/>
+        <result property="slug" column="slug"/>
+        <result property="type" column="type"/>
+        <result property="description" column="description"/>
+        <result property="count" column="count"/>
+        <result property="order" column="order"/>
+        <association property="parent" column="parent" fetchType="lazy" select="getMetaByParent"/>
+    </resultMap>
+    <sql id="pojoName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test='null != name'>
+                #{name},
+            </if>
+            <if test='null != slug'>
+                #{slug},
+            </if>
+            <if test='null != type'>
+                #{type},
+            </if>
+            <if test='null != description'>
+                #{description},
+            </if>
+            <if test='null != order'>
+                #{order},
+            </if>
+            <if test="null !=count">
+                #{count},
+            </if>
+            <if test='null != parent'>
+                #{parent.mid},
+            </if>
+        </trim>
+    </sql>
+    <sql id="columnName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test='null != name'>
+                `name`,
+            </if>
+            <if test='null != slug'>
+                `slug`,
+            </if>
+            <if test='null != type'>
+                `type`,
+            </if>
+            <if test='null != description'>
+                `description`,
+            </if>
+            <if test='null != order'>
+                `order`,
+            </if>
+            <if test="null !=count">
+                `count`,
+            </if>
+            <if test='null != parent'>
+                `parent`,
+            </if>
+        </trim>
+    </sql>
+    <sql id="findCondition">
+        <where>
+            1=0
+            <if test="mid != null">
+                or `mid`=#{mid}
+            </if>
+        </where>
+    </sql>
+    <sql id="updateName">
+        <trim prefix=" " suffix=" " prefixOverrides=",">
+            <if test='null != name'>
+                `name`=#{name},
+            </if>
+            <if test='null != slug'>
+                `slug`=#{slug},
+            </if>
+            <if test='null != type'>
+                `type`=#{type},
+            </if>
+            <if test='null != description'>
+                `description`=#{description},
+            </if>
+            <if test='null != order'>
+                `order`=#{order},
+            </if>
+            <if test="null !=count">
+                `count`=#{count},
+            </if>
+            <if test='null != parent'>
+                `parent`=#{parent.mid},
+            </if>
+        </trim>
+    </sql>
+    <select id="getMeta" resultMap="metasResultMap">
+        select *
+        from typecho_metas
+        where mid = #{mid}
+    </select>
+    <select id="getMetaByParent" resultMap="metasResultMap">
+        select *
+        from typecho_metas
+        where mid = #{parent.mid}
+    </select>
+    <select id="getMetasByType" resultMap="metasResultMap">
+        select *
+        from typecho_metas
+        where type = #{type}
+    </select>
+    <select id="getAllMetas" resultMap="metasResultMap">
+        select *
+        from typecho_metas
+    </select>
+
+    <insert id="addMeta" useGeneratedKeys="true" keyProperty="mid">
+        insert into typecho_metas
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="columnName"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="pojoName"/>
+        </trim>
+    </insert>
+
+    <delete id="deleteMeta">
+        delete
+        from typecho_metas
+        <include refid="findCondition"/>
+    </delete>
+
+    <update id="updateMeta">
+        update typecho_metas
+        <set>
+            <include refid="updateName"/>
+        </set>
+        <include refid="findCondition"/>
+    </update>
+</mapper>

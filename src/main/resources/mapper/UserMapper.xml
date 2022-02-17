@@ -12,9 +12,9 @@
         <result column="authCode" property="authCode"/>
         <result column="url" property="url"/>
         <result column="screenName" property="screenName"/>
-        <result column="created" property="created" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
-        <result column="activated" property="activated" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
-        <result column="logged" property="logged" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result column="created" property="created" typeHandler="com.yegetables.utils.TimestampTypeHandler"/>
+        <result column="activated" property="activated" typeHandler="com.yegetables.utils.TimestampTypeHandler"/>
+        <result column="logged" property="logged" typeHandler="com.yegetables.utils.TimestampTypeHandler"/>
     </resultMap>
     <sql id="pojoName">
         <trim prefix=" " suffix=" " suffixOverrides=",">

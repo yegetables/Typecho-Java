@@ -7,8 +7,8 @@
         <id property="cid" column="cid"/>
         <result property="title" column="title"/>
         <result property="slug" column="slug"/>
-        <result property="created" column="created" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
-        <result property="modified" column="modified" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result property="created" column="created" typeHandler="com.yegetables.utils.TimestampTypeHandler"/>
+        <result property="modified" column="modified" typeHandler="com.yegetables.utils.TimestampTypeHandler"/>
         <result property="text" column="text"/>
         <result property="order" column="order"/>
 
