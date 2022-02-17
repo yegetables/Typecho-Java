@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.CommentMapper">
+    <resultMap id="commentsResultMap" type="comment">
+        <id property="coid" column="coid"/>
+        <result property="created" column="created" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result property="authorName" column="author"/>
+        <result property="authorId" column="authorId"/>
+        <result property="email" column="mail"/>
+        <result property="url" column="url"/>
+        <result property="ip" column="ip"/>
+        <result property="agent" column="agent"/>
+        <result property="text" column="text"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <!--       resultMap="com.yegetables.dao.ContentMapper.contentsResultMap"-->
+        <association property="content" column="cid"
+                     fetchType="lazy"
+                     select="com.yegetables.dao.ContentMapper.getContent"
+        />
+        <!--        resultMap="com.yegetables.dao.UserMapper.usersResultMap"-->
+        <association property="owner" column="ownerId" fetchType="lazy"
+                     select="com.yegetables.dao.UserMapper.getUserByOwner"/>
+        <association property="parent" column="parent" fetchType="lazy"
+                     select="com.yegetables.dao.CommentMapper.getCommentByParent"/>
+    </resultMap>
+    <sql id="pojoName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test='null != content'>
+                #{content.cid},
+            </if>
+            <if test="null != created">
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test='null != authorName'>
+                #{authorName},
+            </if>
+            <if test='null != authorId'>
+                #{authorId},
+            </if>
+            <if test='null !=owner'>
+                #{owner.uid},
+            </if>
+            <if test='null != email'>
+                #{email},
+            </if>
+            <if test='null != url'>
+                #{url},
+            </if>
+            <if test="null !=ip">
+                #{ip},
+            </if>
+            <if test='null != agent'>
+                #{agent},
+            </if>
+            <if test='null != text'>
+                #{text},
+            </if>
+            <if test='null != type'>
+                #{type},
+            </if>
+            <if test='null != status'>
+                #{status},
+            </if>
+            <if test='null !=parent'>
+                #{parent.coid},
+            </if>
+        </trim>
+    </sql>
+    <sql id="columnName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test='null != content'>
+                `cid`,
+            </if>
+            <if test="null != created">
+                `created`,
+            </if>
+            <if test='null != authorName'>
+                `author`,
+            </if>
+            <if test='null != authorId'>
+                `authorId`,
+            </if>
+            <if test='null !=owner'>
+                `ownerId`,
+            </if>
+            <if test='null != email'>
+                `mail`,
+            </if>
+            <if test='null != url'>
+                `url`,
+            </if>
+            <if test="null !=ip">
+                `ip`,
+            </if>
+            <if test='null != agent'>
+                `agent`,
+            </if>
+            <if test='null != text'>
+                `text`,
+            </if>
+            <if test='null != type'>
+                `type`,
+            </if>
+            <if test='null != status'>
+                `status`,
+            </if>
+            <if test='null !=parent'>
+                `parent`,
+            </if>
+        </trim>
+    </sql>
+    <sql id="findCondition">
+        <where>
+            1=0
+            <if test="coid != null">
+                or `coid`=#{coid}
+            </if>
+        </where>
+    </sql>
+    <sql id="updateName">
+        <trim prefix=" " suffix=" " prefixOverrides=",">
+            <if test='null != content'>
+                `cid`=#{content.cid},
+            </if>
+            <if test="null != created">
+                `created`=#{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test='null != authorName'>
+                `author`=#{authorName},
+            </if>
+            <if test='null != authorId'>
+                `authorId`=#{authorId},
+            </if>
+            <if test='null !=owner'>
+                `ownerId`=#{owner.uid},
+            </if>
+            <if test='null != email'>
+                `mail`=#{email},
+            </if>
+            <if test='null != url'>
+                `url`=#{url},
+            </if>
+            <if test="null !=ip">
+                `ip`=#{ip},
+            </if>
+            <if test='null != agent'>
+                `agent`=#{agent},
+            </if>
+            <if test='null != text'>
+                `text`=#{text},
+            </if>
+            <if test='null != type'>
+                `type`=#{type},
+            </if>
+            <if test='null != status'>
+                `status`=#{status},
+            </if>
+            <if test='null !=parent'>
+                `parent`=#{parent.coid},
+            </if>
+        </trim>
+    </sql>
+
+
+    <select id="getAllComments" resultMap="commentsResultMap">
+        select *
+        from typecho_comments
+    </select>
+    <select id="getAllCommentsByContentId" resultMap="commentsResultMap">
+        select *
+        from typecho_comments
+        where cid = #{commentId}
+    </select>
+    <select id="getComment" resultMap="commentsResultMap">
+        select *
+        from typecho_comments
+        where coid = #{coid}
+    </select>
+    <select id="getCommentByParent" resultMap="commentsResultMap">
+        select *
+        from typecho_comments
+        where coid = #{parent.coid}
+    </select>
+
+    <insert id="addComment" parameterType="content" useGeneratedKeys="true" keyProperty="coid">
+        insert into typecho_comments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="columnName"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="pojoName"/>
+        </trim>
+    </insert>
+
+    <update id="updateComment">
+        update typecho_comments
+        <set>
+            <include refid="updateName"/>
+        </set>
+        <include refid="findCondition"/>
+    </update>
+
+
+    <delete id="deleteComment">
+        delete
+        from typecho_comments
+        <include refid="findCondition"/>
+    </delete>
+</mapper>
