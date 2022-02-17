@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd 
+        http://www.alibaba.com/schema/stat https://www.alibaba.com/schema/stat.xsd 
+        http://www.springframework.org/schema/mvc 
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!-- #1.配置 db的资源-->
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!-- #2.配置bean  datasource-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--        连接池属性        -->
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="url" value="${jdbc.jdbcUrl}"/>
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <!--        druid连接池私有属性-->
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="maxWait" value="${jdbc.maxWait}"/>
+        <!--                关闭连接后不自动commit -->
+        <property name="defaultAutoCommit" value="false"/>
+        <!--                获取连接超时时间 -->
+        <property name="queryTimeout" value="10000"/>
+    </bean>
+    <!--#3.配置SqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--        mybatis 的全局配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--                  扫描并使用pojo的别名-->
+        <property name="typeAliasesPackage" value="com.yegetables.pojo"/>
+        <!--                  扫描mapper需要的xml-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+    <!--#4.扫描mapper接口，动态实现接口，并注入ioc中    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--        注入sqlSessionFactory -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!--        给出需要扫描Dao接口包 -->
+        <property name="basePackage" value="com.yegetables.dao"/>
+    </bean>
+
+</beans>

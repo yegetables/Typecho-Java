@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.UserMapper">
+    <resultMap id="usersResultMap" type="user">
+        <id column="uid" property="uid"/>
+        <result column="name" property="name"/>
+        <result column="mail" property="mail"/>
+        <result column="password" property="password"/>
+        <result column="group" property="group"/>
+        <result column="authCode" property="authCode"/>
+        <result column="url" property="url"/>
+        <result column="screenName" property="screenName"/>
+        <result column="created" property="created" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result column="activated" property="activated" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result column="logged" property="logged" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+    </resultMap>
+    <sql id="pojoName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="mail != null">
+                #{mail},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+            <if test="screenName != null">
+                #{screenName},
+            </if>
+            <if test="created != null">
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test="activated != null">
+                #{activited,jdbcType=TIMESTAMP},
+            </if>
+            <if test="logged != null">
+                #{logged,jdbcType=TIMESTAMP},
+            </if>
+            <if test="group != null">
+                #{group},
+            </if>
+            <if test="authCode != null">
+                #{authCode},
+            </if>
+        </trim>
+    </sql>
+    <sql id="columnName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="password != null">
+                `password`,
+            </if>
+            <if test="mail != null">
+                `mail`,
+            </if>
+            <if test="url != null">
+                `url`,
+            </if>
+            <if test="screenName != null">
+                `screenName`,
+            </if>
+            <if test="created != null">
+                `created`,
+            </if>
+            <if test="activated != null">
+                `activited`,
+            </if>
+            <if test="logged != null">
+                `logged`,
+            </if>
+            <if test="group != null">
+                `group`,
+            </if>
+            <if test="authCode != null">
+                `authCode`,
+            </if>
+        </trim>
+    </sql>
+    <sql id="findCondition">
+        where 1=0
+        <if test="uid != null ">
+            or `uid` = #{uid}
+        </if>
+        <if test="mail != null ">
+            or `mail` = #{mail}
+        </if>
+        <if test="name != null ">
+            or `name` = #{name}
+        </if>
+    </sql>
+    <sql id="updateName">
+        <trim prefix=" " suffix=" " prefixOverrides=",">
+            <if test="name != null">
+                , `name` = #{name}
+            </if>
+            <if test="password != null">
+                , `password` = #{password}
+            </if>
+            <if test="mail != null">
+                , `mail` = #{mail}
+            </if>
+            <if test="url != null">
+                , `url` = #{url}
+            </if>
+            <if test="screenName != null">
+                , `screenName` = #{screenName}
+            </if>
+            <if test="created != null">
+                , `created` = #{created,jdbcType=TIMESTAMP}
+            </if>
+            <if test="activated != null">
+                , `activated` = #{activated,jdbcType=TIMESTAMP}
+            </if>
+            <if test="logged != null">
+                , `logged` = #{logged,jdbcType=TIMESTAMP}
+            </if>
+            <if test="group != null">
+                , `group` = #{group}
+            </if>
+            <if test="authCode != null">
+                , `authCode` = #{authCode}
+            </if>
+        </trim>
+    </sql>
+
+    <select id="getAllUsers" resultMap="usersResultMap">
+        select *
+        from typecho_users
+    </select>
+    <select id="getUser" resultMap="usersResultMap">
+        select *
+        from typecho_users
+        <include refid="findCondition"/>
+    </select>
+    <!--    拿到自增id-->
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="uid">
+        insert into typecho_users
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="columnName"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="pojoName"/>
+        </trim>
+    </insert>
+
+
+    <delete id="deleteUser">
+        delete
+        from typecho_users
+        <include refid="findCondition"/>
+    </delete>
+    <update id="updateUser">
+        update typecho_users
+        <set>
+            <include refid="updateName"/>
+        </set>
+        <include refid="findCondition"/>
+    </update>
+</mapper>

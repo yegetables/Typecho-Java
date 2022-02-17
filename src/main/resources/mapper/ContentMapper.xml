@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.ContentMapper">
+    <resultMap id="contentsResultMap" type="content">
+        <id property="cid" column="cid"/>
+        <result property="title" column="title"/>
+        <result property="slug" column="slug"/>
+        <result property="created" column="created" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result property="modified" column="modified" typeHandler="com.yegetables.dao.TimestampTypeHandler"/>
+        <result property="text" column="text"/>
+        <result property="order" column="order"/>
+
+        <result property="template" column="template"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="password" column="password"/>
+        <result property="commentsNum" column="commentsNum"/>
+        <result property="allowComment" column="allowComment"/>
+        <result property="allowPing" column="allowPing"/>
+        <result property="allowFeed" column="allowFeed"/>
+        <!--        <result property="parent" column="parent"/>-->
+        <!--        级联 懒加载-->
+        <association property="author" column="authorId"
+                     fetchType="lazy" select="com.yegetables.dao.UserMapper.getUser"
+
+        />
+        <association property="parent" column="parent"  foreignColumn="cid"/>
+    </resultMap>
+    <sql id="pojoName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test='null != title'>
+                #{title},
+            </if>
+            <if test='null != slug'>
+                #{slug},
+            </if>
+            <if test='null != created'>
+                #{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test='null != modified'>
+                #{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test='null != text'>
+                #{text},
+            </if>
+            <if test='null != order'>
+                #{order},
+            </if>
+            <if test='null != author'>
+                #{author.uid},
+            </if>
+            <if test='null !=template'>
+                #{template},
+            </if>
+            <if test='null != type'>
+                #{type},
+            </if>
+            <if test='null != status'>
+                #{status},
+            </if>
+            <if test='null != password'>
+                #{password},
+            </if>
+            <if test='null != commentsNum'>
+                #{commentsNum},
+            </if>
+            <if test='null != allowComment'>
+                #{allowComment},
+            </if>
+            <if test='null != allowPing'>
+                #{allowPing},
+            </if>
+            <if test='null != allowFeed'>
+                #{allowFeed},
+            </if>
+            <if test='null != parent'>
+                #{parent.cid},
+            </if>
+        </trim>
+    </sql>
+    <sql id="columnName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test='null != title'>
+                `title`,
+            </if>
+            <if test='null != slug'>
+                `slug`,
+            </if>
+            <if test='null != created'>
+                `created`,
+            </if>
+            <if test='null != modified'>
+                `modified`,
+            </if>
+            <if test='null != text'>
+                `text`,
+            </if>
+            <if test='null != order'>
+                `order`,
+            </if>
+            <if test='null != author'>
+                `authorId`,
+            </if>
+            <if test='null !=template'>
+                `template`,
+            </if>
+            <if test='null != type'>
+                `type`,
+            </if>
+            <if test='null != status'>
+                `status`,
+            </if>
+            <if test='null != password'>
+                `password`,
+            </if>
+            <if test='null != commentsNum'>
+                `commentsNum`,
+            </if>
+            <if test='null != allowComment'>
+                `allowComment`,
+            </if>
+            <if test='null != allowPing'>
+                `allowPing`,
+            </if>
+            <if test='null != allowFeed'>
+                `allowFeed`,
+            </if>
+            <if test='null != parent'>
+                `parent`,
+            </if>
+        </trim>
+    </sql>
+    <sql id="findCondition">
+        <where>
+            1=0
+            <if test="cid != null">
+                or `cid`=#{cid}
+            </if>
+        </where>
+    </sql>
+    <sql id="updateName">
+        <trim prefix=" " suffix=" " prefixOverrides=",">
+            <if test='null != title'>
+                `title` = #{title},
+            </if>
+            <if test='null != slug'>
+                `slug` = #{slug},
+            </if>
+            <if test='null != created'>
+                `created`=#{created,jdbcType=TIMESTAMP},
+            </if>
+            <if test='null != modified'>
+                `modified`=#{modified,jdbcType=TIMESTAMP},
+            </if>
+            <if test='null != text'>
+                `text` = #{text},
+            </if>
+            <if test='null != order'>
+                `order` = #{order},
+            </if>
+            <if test='null != author'>
+                `authorId`=#{author.uid},
+            </if>
+            <if test='null !=template'>
+                `template`=#{template},
+            </if>
+            <if test='null != type'>
+                `type` = #{type},
+            </if>
+            <if test='null != status'>
+                `status` = #{status},
+            </if>
+            <if test='null != password'>
+                `password` = #{password},
+            </if>
+            <if test='null != commentsNum'>
+                `commentsNum` = #{commentsNum},
+            </if>
+            <if test='null != allowComment'>
+                `allowComment` = #{allowComment},
+            </if>
+            <if test='null != allowPing'>
+                `allowPing`= #{allowPing},
+            </if>
+            <if test='null != allowFeed'>
+                `allowFeed` = #{allowFeed},
+            </if>
+            <if test='null != parent'>
+                `paren` = #{parent.cid},
+            </if>
+        </trim>
+    </sql>
+
+
+    <select id="getAllContents" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+    </select>
+    <select id="getContent" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+        <include refid="findCondition"/>
+    </select>
+    <select id="getContentsByAuthorId" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+        where authorId = #{authorId}
+    </select>
+    <select id="getContentsByType" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+        where type = #{type}
+    </select>
+    <select id="getContentsByStatus" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+        where status = #{status}
+    </select>
+
+    <insert id="addContent" parameterType="content" useGeneratedKeys="true" keyProperty="cid">
+        insert into typecho_contents
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="columnName"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="pojoName"/>
+        </trim>
+    </insert>
+
+    <update id="updateContent">
+        update typecho_contents
+        <set>
+            <include refid="updateName"/>
+        </set>
+        <include refid="findCondition"/>
+    </update>
+
+
+    <delete id="deleteContent">
+        delete
+        from typecho_contents
+        <include refid="findCondition"/>
+    </delete>
+</mapper>

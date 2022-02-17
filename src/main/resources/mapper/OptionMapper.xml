@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.OptionMapper">
+    <resultMap id="optionsResultMap" type="option">
+        <id property="name" column="name"/>
+        <id property="user" column="user"/>
+        <result property="value" column="value"/>
+    </resultMap>
+    <sql id="pojoName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="user != null and user!=0">
+                #{user},
+            </if>
+            <if test="value != null">
+                #{value},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+        </trim>
+    </sql>
+    <sql id="columnName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="user != null and user!=0">
+                `user`,
+            </if>
+            <if test="value != null">
+                `value`,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+        </trim>
+    </sql>
+    <sql id="findCondition">
+        <where>
+            user = #{user}
+            and name = #{name}
+        </where>
+    </sql>
+    <select id="getOption" resultMap="optionsResultMap">
+        select *
+        from typecho_options
+        <include refid="findCondition"/>
+    </select>
+    <select id="getAllOptions" resultMap="optionsResultMap">
+        select *
+        from typecho_options
+    </select>
+
+    <insert id="addOption">
+        insert into typecho_options
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="columnName"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="pojoName"/>
+        </trim>
+    </insert>
+
+    <delete id="deleteOption">
+        delete
+        from typecho_options
+        <include refid="findCondition"/>
+    </delete>
+
+    <update id="updateOption">
+        update typecho_options
+        <set>
+            <if test="value != null">
+                value = #{value},
+            </if>
+        </set>
+        <include refid="findCondition"/>
+    </update>
+</mapper>
