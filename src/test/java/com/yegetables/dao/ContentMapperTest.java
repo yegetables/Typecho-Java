@@ -8,6 +8,9 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 @Log4j2
 class ContentMapperTest extends BaseJunit5Test {
 
@@ -54,8 +57,8 @@ class ContentMapperTest extends BaseJunit5Test {
         content.setTitle(RandomTools.getRandomName());
         content.setCreated(TimeTools.NowTime());
         content.setModified(content.getCreated());
-        content.setAuthor(userMapper.getAllUsers().listIterator().next());
-        content.setParent(contentMapper.getAllContents().get(0));
+        content.setAuthor(RandomTools.getRandom(userMapper.getAllUsers()));
+        content.setParent(RandomTools.getRandom(contentMapper.getAllContents()));
         contentMapper.addContent(content);
         return content;
     }
@@ -64,33 +67,28 @@ class ContentMapperTest extends BaseJunit5Test {
     void addContent() {
         Content content = createContent();
         var newContent = contentMapper.getContent(content.getCid());
-        //        assertEquals(content, newContent);
-        //        assertTrue(content.equals(newContent));
-        var parent = newContent.getParent().getCid();
-        System.out.println("parent = " + newContent.getParent());
-        System.out.println(content);
-        System.out.println(newContent);
-        //        log.warn(newContent);
+        assertEquals(content, newContent);
     }
 
 
-    //    @Test
-    //    void updateContent() {
-    //        Content content = contentMapper.getContent(2);
-    //        content.setText("tettetetette");
-    //        contentMapper.updateContent(content);
-    //        log.info("" + contentMapper.getContent(content.getId()));
-    //
-    //    }
-    //
-    //    @Test
-    //    void deleteContent() {
-    //        Content content = contentMapper.getContent(4);
-    //        //        content.setText("tettetetette");
-    //        contentMapper.deleteContent(content);
-    //        log.info("" + contentMapper.getContent(content.getId()));
-    //
-    //    }
+    @Test
+    void updateContent() {
+        Content content = createContent();
+        content.setText(RandomTools.getRandomText(8));
+        contentMapper.updateContent(content);
+        var newContent = contentMapper.getContent(content.getCid());
+        assertEquals(content, newContent);
+        contentMapper.deleteContent(newContent);
+    }
+
+    @Test
+    void deleteContent() {
+        Content content = createContent();
+        contentMapper.deleteContent(content);
+        Content newContent = contentMapper.getContent(content.getCid());
+        assertNull(newContent);
+
+    }
 
 
 }

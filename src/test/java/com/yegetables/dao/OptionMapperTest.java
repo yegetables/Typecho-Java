@@ -4,7 +4,6 @@ import com.yegetables.pojo.Option;
 import com.yegetables.utils.BaseJunit5Test;
 import com.yegetables.utils.RandomTools;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +15,8 @@ class OptionMapperTest extends BaseJunit5Test {
 
     @Autowired
     private OptionMapper optionMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     void addOption() {
@@ -28,7 +29,7 @@ class OptionMapperTest extends BaseJunit5Test {
         Option option = new Option();
         option.setName(RandomTools.getRandomName());
         option.setValue(RandomTools.getRandomText(5));
-        option.setUser(RandomUtils.nextLong() % 2);
+        option.setUser(RandomTools.getRandom(userMapper.getAllUsers()).getUid());
         optionMapper.addOption(option);
         return option;
     }

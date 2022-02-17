@@ -140,6 +140,11 @@
         from typecho_users
         <include refid="findCondition"/>
     </select>
+    <select id="getUserByAuthor" resultMap="usersResultMap">
+        select *
+        from typecho_users
+        where `uid` = #{author.uid}
+    </select>
     <!--    拿到自增id-->
     <insert id="addUser" useGeneratedKeys="true" keyProperty="uid">
         insert into typecho_users

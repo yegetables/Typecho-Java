@@ -22,11 +22,10 @@
         <result property="allowFeed" column="allowFeed"/>
         <!--        <result property="parent" column="parent"/>-->
         <!--        级联 懒加载-->
-        <association property="author" column="authorId"
-                     fetchType="lazy" select="com.yegetables.dao.UserMapper.getUser"
-
+        <association property="author" column="authorId" javaType="user"
+                     fetchType="lazy" select="com.yegetables.dao.UserMapper.getUserByAuthor"
         />
-        <association property="parent" column="parent"  foreignColumn="cid"/>
+        <association property="parent" column="parent" fetchType="lazy" select="getContentByParent" javaType="content"/>
     </resultMap>
     <sql id="pojoName">
         <trim prefix=" " suffix=" " suffixOverrides=",">
@@ -188,7 +187,7 @@
                 `allowFeed` = #{allowFeed},
             </if>
             <if test='null != parent'>
-                `paren` = #{parent.cid},
+                `parent` = #{parent.cid},
             </if>
         </trim>
     </sql>
@@ -203,6 +202,12 @@
         from typecho_contents
         <include refid="findCondition"/>
     </select>
+    <select id="getContentByParent" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+        where `cid` = #{parent.cid}
+    </select>
+
     <select id="getContentsByAuthorId" resultMap="contentsResultMap">
         select *
         from typecho_contents

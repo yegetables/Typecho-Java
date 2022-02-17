@@ -40,6 +40,7 @@ public class Content {
     /**
      * 作者id  ---> authorId
      */
+    //    @ToString.Exclude
     private User author = null;
     /**
      * 内容使用的模板
@@ -76,5 +77,6 @@ public class Content {
     /**
      * 父级评论
      */
+    //    @ToString.Exclude
     private Content parent = null;
 }
