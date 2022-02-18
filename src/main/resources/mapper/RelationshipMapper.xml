@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.RelationshipMapper">
+    <resultMap id="relationshipsResultMap" type="relationship">
+        <collection property="content" column="cid" fetchType="lazy"
+                    ofType="com.yegetables.pojo.Content"
+                    select="com.yegetables.dao.ContentMapper.getContent"
+        />
+        <collection property="meta" column="mid" fetchType="lazy"
+                    ofType="com.yegetables.pojo.Meta"
+                    select="com.yegetables.dao.MetaMapper.getMeta"
+        />
+    </resultMap>
+
+
+    <select id="getContentsByMid" resultMap="com.yegetables.dao.ContentMapper.contentsResultMap">
+        select *
+        from typecho_relationships
+        where 1=0
+        <if test=" mid != null ">
+            or `mid` = #{mid}
+        </if>
+    </select>
+    <select id="getMetasByCid" resultMap="com.yegetables.dao.MetaMapper.metasResultMap">
+        select *
+        from typecho_relationships
+        where 1=0
+        <if test=" cid != null ">
+            or `cid` = #{cid}
+        </if>
+    </select>
+    <select id="getAllRelationships" resultMap="relationshipsResultMap">
+        select *
+        from typecho_relationships
+    </select>
+    <select id="getRelationship" resultMap="relationshipsResultMap">
+        select *
+        from typecho_relationships
+        where 1 = 0
+        <if test="cid != null and mid != null ">
+            or `cid` = #{cid}
+            and `mid` = #{mid}
+        </if>
+    </select>
+
+    <insert id="addRelationship">
+        insert into typecho_relationships
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cid != null and mid != null ">
+                `mid`,
+                `cid`,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cid != null and mid != null ">
+                #{mid},
+                #{cid},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteRelationship">
+        delete
+        from typecho_relationships
+        where 1 = 0
+        <if test="cid != null and mid != null ">
+            or `cid` = #{cid}
+            and `mid` = #{mid}
+        </if>
+    </delete>
+</mapper>

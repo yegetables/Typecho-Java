@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yegetables.dao.FieldMapper">
+    <resultMap id="fieldsResultMap" type="field">
+        <!--        <id column="cid" property="cid"/>-->
+        <id column="name" property="name"/>
+        <result property="type" column="type"/>
+        <result property="str_value" column="str_value"/>
+        <result property="int_value" column="int_value"/>
+        <result property="float_value" column="float_value"/>
+        <association property="content" javaType="content" column="cid"
+                     select="com.yegetables.dao.ContentMapper.getContent"/>
+    </resultMap>
+    <sql id="pojoName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="content != null">
+                #{content.cid},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="str_value != null">
+                #{str_value},
+            </if>
+            <if test="int_value != null">
+                #{int_value},
+            </if>
+            <if test="float_value != null">
+                #{float_value},
+            </if>
+        </trim>
+    </sql>
+    <sql id="columnName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="content != null">
+                `cid`,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="str_value != null">
+                `str_value`,
+            </if>
+            <if test="int_value != null">
+                `int_value`,
+            </if>
+            <if test="float_value != null">
+                `float_value`,
+            </if>
+        </trim>
+    </sql>
+    <sql id="findCondition">
+        where 1=0
+        <if test="name != null and cid != null">
+            or `name`=#{name}
+            and `cid`=#{cid}
+        </if>
+    </sql>
+    <sql id="updateName">
+        <trim prefix=" " suffix=" " suffixOverrides=",">
+            <if test="type != null">
+                `type`=#{type},
+            </if>
+            <if test="str_value != null">
+                `str_value`=#{str_value},
+            </if>
+            <if test="int_value != null">
+                `int_value`=#{int_value},
+            </if>
+            <if test="float_value != null">
+                `float_value`=#{float_value},
+            </if>
+        </trim>
+    </sql>
+
+    <select id="getAllFields" resultMap="fieldsResultMap">
+        select *
+        from typecho_fields
+    </select>
+    <select id="getField" resultMap="fieldsResultMap">
+        select *
+        from typecho_fields
+        <include refid="findCondition"/>
+    </select>
+
+
+    <insert id="addField">
+        insert into typecho_fields
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="columnName"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="pojoName"/>
+        </trim>
+    </insert>
+
+
+    <delete id="deleteField">
+        delete
+        from typecho_fields
+        <include refid="findCondition"/>
+    </delete>
+
+    <update id="updateField">
+        update typecho_fields
+        <set>
+            <include refid="updateName"/>
+        </set>
+        where 1=0
+        <if test="name != null and content != null">
+            or `name`=#{name}
+            and `cid`=#{content.cid}
+        </if>
+    </update>
+</mapper>
