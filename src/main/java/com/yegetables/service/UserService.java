@@ -1,3 +1,5 @@
 package com.yegetables.service;
 
-public interface UserService {}
+public interface UserService {
+
+}
