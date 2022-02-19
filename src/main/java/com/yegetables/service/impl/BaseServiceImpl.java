@@ -1,11 +1,18 @@
 package com.yegetables.service.impl;
 
 import com.yegetables.dao.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-
+@Service
+@Scope
 public class BaseServiceImpl {
-    protected static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(BaseServiceImpl.class);
+    //    protected static Logger log;
+    protected static final Logger log = LogManager.getLogger(BaseServiceImpl.class);
+
     @Autowired
     protected UserMapper userMapper;
     @Autowired
