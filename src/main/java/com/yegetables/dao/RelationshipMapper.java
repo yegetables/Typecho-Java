@@ -16,33 +16,33 @@ public interface RelationshipMapper {
 
     ArrayList<Content> getContentsByMid(Long mid);
 
-    void addRelationship(@Param("cid") Long cid, @Param("mid") Long mid);
+    Integer addRelationship(@Param("cid") Long cid, @Param("mid") Long mid);
 
-    void deleteRelationship(@Param("cid") Long cid, @Param("mid") Long mid);
+    Integer deleteRelationship(@Param("cid") Long cid, @Param("mid") Long mid);
     //void updateRelationship(Long cid, Long mid);
 
-    default void deleteRelationship(Content content, Meta meta) {
-        deleteRelationship(content.getCid(), meta.getMid());
+    default Integer deleteRelationship(Content content, Meta meta) {
+        return deleteRelationship(content.cid(), meta.mid());
     }
 
-    default void deleteRelationship(Relationship relationship) {
-        deleteRelationship(relationship.getContent(), relationship.getMeta());
+    default Integer deleteRelationship(Relationship relationship) {
+        return deleteRelationship(relationship.content(), relationship.meta());
     }
 
-    default void addRelationship(Content content, Meta meta) {
-        addRelationship(content.getCid(), meta.getMid());
+    default Integer addRelationship(Content content, Meta meta) {
+        return addRelationship(content.cid(), meta.mid());
     }
 
-    default void addRelationship(Relationship relationship) {
-        addRelationship(relationship.getContent(), relationship.getMeta());
+    default Integer addRelationship(Relationship relationship) {
+        return addRelationship(relationship.content(), relationship.meta());
     }
 
     default ArrayList<Content> getContents(Meta meta) {
-        return getContentsByMid(meta.getMid());
+        return getContentsByMid(meta.mid());
     }
 
     default ArrayList<Meta> getMetas(Content content) {
-        return getMetasByCid(content.getCid());
+        return getMetasByCid(content.cid());
     }
 
 }

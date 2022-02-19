@@ -11,13 +11,14 @@ public interface MetaMapper {
 
     Meta getMeta(Long mid);
 
-    void addMeta(Meta meta);
+    Integer addMeta(Meta meta);
 
-    void updateMeta(Meta meta);
 
-    void deleteMeta(Long mid);
+    Integer updateMeta(Meta meta);
 
-    default void deleteMeta(Meta meta) {
-        deleteMeta(meta.getMid());
+    Integer deleteMeta(Long mid);
+
+    default Integer deleteMeta(Meta meta) {
+        return deleteMeta(meta.mid());
     }
 }

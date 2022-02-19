@@ -2,14 +2,19 @@ package com.yegetables.pojo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 
 @Data
+@Accessors(fluent = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 public class User {
     /**
      * 用户id  	user表主键 主键,非负,自增
      */
+    @EqualsAndHashCode.Include
     private Long uid;
     /**
      * 用户名 唯一
@@ -54,6 +59,4 @@ public class User {
      * 用户登录验证码
      */
     private String authCode;
-
-
 }

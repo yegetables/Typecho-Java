@@ -24,27 +24,28 @@ public interface UserMapper {
         return getUser(null, null, mail);
     }
 
-    default void deleteUserByUid(Long uid) {
-        deleteUser(uid, null, null);
+    default Integer deleteUserByUid(Long uid) {
+        return deleteUser(uid, null, null);
     }
 
-    default void deleteUserByName(String name) {
-        deleteUser(null, name, null);
+    default Integer deleteUserByName(String name) {
+        return deleteUser(null, name, null);
     }
 
-    default void deleteUserByMail(String mail) {
-        deleteUser(null, null, mail);
+    default Integer deleteUserByMail(String mail) {
+        return deleteUser(null, null, mail);
     }
 
-    default void deleteUser(User user) {
-        if (user != null) deleteUser(user.getUid(), user.getName(), user.getMail());
+    default Integer deleteUser(User user) {
+        if (user != null) return deleteUser(user.uid(), user.name(), user.mail());
+        else return 0;
     }
 
-    void addUser(User user);
+    Integer addUser(User user);
 
-    void updateUser(User user);
+    Integer updateUser(User user);
 
     User getUser(@Param("uid") Long uid, @Param("name") String name, @Param("mail") String mail);
 
-    void deleteUser(@Param("uid") Long uid, @Param("name") String name, @Param("mail") String mail);
+    Integer deleteUser(@Param("uid") Long uid, @Param("name") String name, @Param("mail") String mail);
 }

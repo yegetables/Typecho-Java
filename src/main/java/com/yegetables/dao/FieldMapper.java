@@ -11,25 +11,26 @@ public interface FieldMapper {
 
     Field getField(@Param("cid") Long cid, @Param("name") String name);
 
-    void addField(Field field);
+    Integer addField(Field field);
 
-    void deleteField(@Param("cid") Long cid, @Param("name") String name);
 
-    void updateField(Field field);
+    Integer deleteField(@Param("cid") Long cid, @Param("name") String name);
 
-    default void deleteField(Field field) {
-        deleteField(field.getContent(), field.getName());
+    Integer updateField(Field field);
+
+    default Integer deleteField(Field field) {
+        return deleteField(field.content(), field.name());
     }
 
 
-    default void deleteField(Content content, String name) {
-        deleteField(content.getCid(), name);
+    default Integer deleteField(Content content, String name) {
+        return deleteField(content.cid(), name);
     }
 
 
     default Field getField(Content content, String name) {
         if (content == null) return null;
-        return getField(content.getCid(), name);
+        return getField(content.cid(), name);
     }
 }
 

@@ -19,25 +19,25 @@ public interface ContentMapper {
     ArrayList<Content> getContentsByStatus(String status);
     //    ArrayList<Content> getContentsByParent(Content parent);
 
-    void addContent(Content content);
+    Integer addContent(Content content);
 
     //不能删除更新外键（author）
-    void updateContent(Content content);
+    Integer updateContent(Content content);
 
     //不能删除更新外键（author）
-    void deleteContent(Long cid);
+    Integer deleteContent(Long cid);
 
 
-    default void deleteContent(Content content) {
-        deleteContent(content.getCid());
+    default Integer deleteContent(Content content) {
+        return deleteContent(content.cid());
     }
 
 
     default ArrayList<Content> getContentsByAuthor(Content content) {
-        return getContentsByAuthor(content.getAuthor());
+        return getContentsByAuthor(content.author());
     }
 
     default ArrayList<Content> getContentsByAuthor(User author) {
-        return getContentsByAuthorId(author.getUid());
+        return getContentsByAuthorId(author.uid());
     }
 }

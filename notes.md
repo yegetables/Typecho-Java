@@ -1,2 +1,4 @@
-user表的authCode不知道在哪用到
-        created,activated,logged三个时间是unsigned ing不是datatime
+user表的authCode不知道在哪用到 created,activated,logged三个时间是unsigned ing不是datatime -->自己写typeHander解决
+
+relationship的mapper.xml里面是 没有用懒加载
+其他的纪念开启了懒加载但是equals的时候老师未加载出来,不得已把equalsAndHash改成了onlyInclude

@@ -2,14 +2,19 @@ package com.yegetables.pojo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 
 @Data
+@Accessors(fluent = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 public class Comment {
     /**
      * 评论id
      */
+    @EqualsAndHashCode.Include
     private Long coid;
     /**
      * 文章id

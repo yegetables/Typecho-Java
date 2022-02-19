@@ -10,21 +10,22 @@ import java.util.ArrayList;
 public interface OptionMapper {
     ArrayList<Option> getAllOptions();
 
-    void addOption(Option option);
+    Integer addOption(Option option);
 
-    void updateOption(Option option);
+    Integer updateOption(Option option);
 
-    void deleteOption(@Param("name") String name, @Param("user") Long user);
+
+    Integer deleteOption(@Param("name") String name, @Param("user") Long user);
 
     Option getOption(@Param("name") String name, @Param("user") Long user);
 
 
-    default void deleteOptionByName(String name) {
-        deleteOption(name, 0L);
+    default Integer deleteOptionByName(String name) {
+        return deleteOption(name, 0L);
     }
 
-    default void deleteOption(Option option) {
-        deleteOption(option.getName(), option.getUser());
+    default Integer deleteOption(Option option) {
+        return deleteOption(option.name(), option.user());
     }
 
     default Option getOptionByName(String name) {

@@ -1,12 +1,19 @@
 package com.yegetables.pojo;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 @Data
+@Accessors(fluent = true)@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 public class Meta {
     /**
      * 项目主键
      */
+    @EqualsAndHashCode.Include
     private Long mid;
     /**
      * 项目名称

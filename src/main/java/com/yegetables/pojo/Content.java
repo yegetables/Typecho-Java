@@ -1,15 +1,21 @@
 package com.yegetables.pojo;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 
 @Data
+@Accessors(fluent = true)@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 public class Content {
     /**
      * 文章id
      */
+    @EqualsAndHashCode.Include
     private Long cid;
     /**
      * 文章标题
@@ -41,7 +47,7 @@ public class Content {
      * 作者id  ---> authorId
      */
     //    @ToString.Exclude
-    private User author = null;
+    private User author ;
     /**
      * 内容使用的模板
      */
@@ -78,5 +84,5 @@ public class Content {
      * 父级评论
      */
     //    @ToString.Exclude
-    private Content parent = null;
+    private Content parent ;
 }

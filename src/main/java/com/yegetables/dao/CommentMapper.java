@@ -14,16 +14,16 @@ public interface CommentMapper {
 
     Comment getComment(Long coid);
 
-    void addComment(Comment comment);
+    Integer addComment(Comment comment);
 
-    void updateComment(Comment comment);
+    Integer updateComment(Comment comment);
 
-    void deleteComment(Long commentId);
+    Integer deleteComment(Long commentId);
 
-    default ArrayList<Comment> getAllCommentsByContent(Content content) {return getAllCommentsByContentId(content.getCid());}
+    default ArrayList<Comment> getAllCommentsByContent(Content content) {return getAllCommentsByContentId(content.cid());}
 
-    default void deleteComment(Comment comment) {
-        deleteComment(comment.getCoid());
+    default Integer deleteComment(Comment comment) {
+        return deleteComment(comment.coid());
     }
 }
 
