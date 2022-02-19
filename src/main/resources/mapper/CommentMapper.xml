@@ -20,6 +20,7 @@
                      fetchType="lazy"
                      select="com.yegetables.dao.ContentMapper.getContent"
         />
+        <!--                     resultMap="com.yegetables.dao.ContentMapper.contentsResultMap"-->
         <!--        resultMap="com.yegetables.dao.UserMapper.usersResultMap"-->
         <association property="owner" column="ownerId" fetchType="lazy"
                      select="com.yegetables.dao.UserMapper.getUserByOwner"/>
@@ -32,7 +33,7 @@
                 #{content.cid},
             </if>
             <if test="null != created">
-                #{created,jdbcType=TIMESTAMP},
+                #{created,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test='null != authorName'>
                 #{authorName},
@@ -126,7 +127,7 @@
                 `cid`=#{content.cid},
             </if>
             <if test="null != created">
-                `created`=#{created,jdbcType=TIMESTAMP},
+                `created`=#{created,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test='null != authorName'>
                 `author`=#{authorName},

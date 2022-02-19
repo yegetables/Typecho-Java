@@ -21,34 +21,36 @@ class OptionMapperTest extends BaseJunit5Test {
     @Test
     void addOption() {
         Option option = createOption();
-        var newOption = optionMapper.getOption(option.getName(), option.getUser());
+        var newOption = optionMapper.getOption(option.name(), option.user());
+        //        newOption;
         assertEquals(option, newOption);
     }
 
     Option createOption() {
         Option option = new Option();
-        option.setName(RandomTools.getRandomName());
-        option.setValue(RandomTools.getRandomText(5));
-        option.setUser(RandomTools.getRandom(userMapper.getAllUsers()).getUid());
-        optionMapper.addOption(option);
+        option.name(RandomTools.getRandomName());
+        option.value(RandomTools.getRandomText(5));
+        option.user(RandomTools.getRandom(userMapper.getAllUsers()).uid());
+        assertEquals(1, optionMapper.addOption(option));
         return option;
     }
 
     @Test
     void updateOption() {
         Option option = createOption();
-        option.setValue(RandomTools.getRandomText(6));
-        optionMapper.updateOption(option);
-        Option newOption = optionMapper.getOption(option.getName(), option.getUser());
-        assertEquals(option, newOption);
+        option.value(RandomTools.getRandomText(6));
+        assertEquals(1, optionMapper.updateOption(option));
+        Option newOption = optionMapper.getOption(option.name(), option.user());
+        //        newOption.toString();
+        assertEquals(newOption, option);
     }
 
 
     @Test
     void deleteOptionByName() {
         Option option = createOption();
-        optionMapper.deleteOption(option);
-        Option newOption = optionMapper.getOption(option.getName(), option.getUser());
+        assertEquals(1, optionMapper.deleteOption(option));
+        Option newOption = optionMapper.getOption(option.name(), option.user());
         assertNull(newOption);
     }
 

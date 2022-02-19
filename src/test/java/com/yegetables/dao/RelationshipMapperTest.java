@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RelationshipMapperTest extends BaseJunit5Test {
     @Autowired
@@ -18,8 +19,8 @@ class RelationshipMapperTest extends BaseJunit5Test {
 
     Relationship createRelationship() {
         Relationship relationship = new Relationship();
-        relationship.setContent(RandomTools.getRandom(contentMapper.getAllContents()));
-        relationship.setMeta(RandomTools.getRandom(metaMapper.getAllMetas()));
+        relationship.content(RandomTools.getRandom(contentMapper.getAllContents()));
+        relationship.meta(RandomTools.getRandom(metaMapper.getAllMetas()));
         relationshipMapper.addRelationship(relationship);
         return relationship;
     }
@@ -32,13 +33,22 @@ class RelationshipMapperTest extends BaseJunit5Test {
 
     @Test
     void getMetasById() {
-        var list = relationshipMapper.getMetasByCid(RandomTools.getRandom(relationshipMapper.getAllRelationships()).getContent().getCid());
+        var list = relationshipMapper.getMetasByCid(RandomTools.getRandom(relationshipMapper.getAllRelationships()).content().cid());
         System.out.println(list);
     }
 
     @Test
     void getContentsById() {
-        var list = relationshipMapper.getContentsByMid(RandomTools.getRandom(relationshipMapper.getAllRelationships()).getMeta().getMid());
+        //        var list1 = relationshipMapper.getAllRelationships();
+        //        assertNotNull(list1);
+        //        var list2 = RandomTools.getRandom((list1));
+        //        assertNotNull(list2);
+        //        var list3 = list2.meta();
+        //        assertNotNull(list3);
+        //        var list4 = list3.mid();
+        //        assertNotNull(list4);
+        //        System.out.println("list4:" + list4);
+        var list = relationshipMapper.getContentsByMid(RandomTools.getRandom(relationshipMapper.getAllRelationships()).meta().mid());
         System.out.println(list);
     }
 
@@ -46,17 +56,16 @@ class RelationshipMapperTest extends BaseJunit5Test {
     @Test
     void addRelationship() {
         var old = createRelationship();
-        var n = relationshipMapper.getRelationship(old.getContent().getCid(), old.getMeta().getMid());
-//        System.out.println(n);
-//        System.out.println(old);
-        assertEquals(old, n);
+        var n = relationshipMapper.getRelationship(old.content().cid(), old.meta().mid());
+        //        n.toString();
+        assertEquals(n, old);
     }
 
     @Test
     void deleteRelationship() {
         var old = createRelationship();
-        relationshipMapper.deleteRelationship(old.getContent().getCid(), old.getMeta().getMid());
-        var n = relationshipMapper.getRelationship(old.getContent().getCid(), old.getMeta().getMid());
-        assertEquals(null, n);
+        assertEquals(1, relationshipMapper.deleteRelationship(old.content().cid(), old.meta().mid()));
+        var n = relationshipMapper.getRelationship(old.content().cid(), old.meta().mid());
+        assertNull(n);
     }
 }

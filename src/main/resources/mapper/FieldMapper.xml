@@ -10,8 +10,10 @@
         <result property="str_value" column="str_value"/>
         <result property="int_value" column="int_value"/>
         <result property="float_value" column="float_value"/>
-        <association property="content" javaType="content" column="cid"
-                     select="com.yegetables.dao.ContentMapper.getContent"/>
+        <association property="content" javaType="content" column="cid" fetchType="lazy"
+                     select="com.yegetables.dao.ContentMapper.getContent"
+        />
+        <!--                     resultMap="com.yegetables.dao.ContentMapper.contentsResultMap"-->
     </resultMap>
     <sql id="pojoName">
         <trim prefix=" " suffix=" " suffixOverrides=",">

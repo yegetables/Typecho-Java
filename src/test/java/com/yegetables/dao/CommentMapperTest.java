@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Log4j2
 class CommentMapperTest extends BaseJunit5Test {
@@ -27,51 +28,54 @@ class CommentMapperTest extends BaseJunit5Test {
 
     @Test
     void getAllCommentsByContentId() {
-        var list = commentMapper.getAllCommentsByContentId(RandomTools.getRandom(contentMapper.getAllContents()).getCid());
+        var list = commentMapper.getAllCommentsByContentId(RandomTools.getRandom(contentMapper.getAllContents()).cid());
         list.forEach(System.out::println);
     }
 
     @Test
     void getComment() {
-        var list = commentMapper.getComment(RandomTools.getRandom(commentMapper.getAllComments()).getCoid());
+        var list = commentMapper.getComment(RandomTools.getRandom(commentMapper.getAllComments()).coid());
         System.out.println(list);
     }
 
     Comment createComment() {
         Comment comment = new Comment();
-        comment.setContent(RandomTools.getRandom(contentMapper.getAllContents()));
-        comment.setAuthorName(RandomTools.getRandomName());
-        comment.setUrl(RandomTools.getRandomUrl());
-        comment.setText(RandomTools.getRandomText(10));
-        comment.setCreated(TimeTools.NowTime());
-        comment.setOwner(comment.getContent().getAuthor());
-        comment.setParent(RandomTools.getRandom(commentMapper.getAllComments()));
-        commentMapper.addComment(comment);
+        comment.content(RandomTools.getRandom(contentMapper.getAllContents()));
+        comment.authorName(RandomTools.getRandomName());
+        comment.url(RandomTools.getRandomUrl());
+        comment.text(RandomTools.getRandomText(10));
+        comment.created(TimeTools.NowTime());
+        comment.owner(comment.content().author());
+        comment.parent(RandomTools.getRandom(commentMapper.getAllComments()));
+        assertEquals(1, commentMapper.addComment(comment));
         return comment;
     }
 
     @Test
     void addComment() {
         Comment comment = createComment();
-        Comment comment1 = commentMapper.getComment(comment.getCoid());
-        assertEquals(comment, comment1);
+        Comment comment1 = commentMapper.getComment(comment.coid());
+        //        comment1.toString();
+        assertEquals(comment1, comment);
     }
 
     @Test
     void updateComment() {
         Comment comment = createComment();
-        comment.setText(RandomTools.getRandomText(10));
-        commentMapper.updateComment(comment);
-        Comment comment1 = commentMapper.getComment(comment.getCoid());
-        assertEquals(comment, comment1);
+        comment.text(RandomTools.getRandomText(10));
+        assertEquals(1, commentMapper.updateComment(comment));
+        Comment comment1 = commentMapper.getComment(comment.coid());
+        //        comment1.toString();
+        assertEquals(comment1, comment);
+
     }
 
     @Test
     void deleteComment() {
         Comment comment = createComment();
-        commentMapper.deleteComment(comment.getCoid());
-        Comment comment1 = commentMapper.getComment(comment.getCoid());
-        assertEquals(null, comment1);
+        assertEquals(1, commentMapper.deleteComment(comment.coid()));
+        Comment comment1 = commentMapper.getComment(comment.coid());
+        assertNull(comment1);
     }
 
 

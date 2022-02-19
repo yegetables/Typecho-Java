@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class FieldMapperTest extends BaseJunit5Test {
 
@@ -17,10 +18,10 @@ class FieldMapperTest extends BaseJunit5Test {
 
     Field createField() {
         Field field = new Field();
-        field.setContent(RandomTools.getRandom(contentMapper.getAllContents()));
-        field.setName(RandomTools.getRandomName());
-        field.setStr_value(RandomTools.getRandomText(4));
-        fieldMapper.addField(field);
+        field.content(RandomTools.getRandom(contentMapper.getAllContents()));
+        field.name(RandomTools.getRandomName());
+        field.str_value(RandomTools.getRandomText(4));
+        assertEquals(1, fieldMapper.addField(field));
         return field;
     }
 
@@ -33,7 +34,7 @@ class FieldMapperTest extends BaseJunit5Test {
     @Test
     void getField() {
         var field = RandomTools.getRandom(fieldMapper.getAllFields());
-        var newField = fieldMapper.getField(field.getContent(), field.getName());
+        var newField = fieldMapper.getField(field.content(), field.name());
         System.out.println(newField);
     }
 
@@ -41,25 +42,27 @@ class FieldMapperTest extends BaseJunit5Test {
         //    @RepeatedTest(value = 8, name = "测试插入")
     void addField() {
         var old = createField();
-        var newField = fieldMapper.getField(old.getContent(), old.getName());
-        assertEquals(old, newField);
+        var newField = fieldMapper.getField(old.content(), old.name());
+        //        newField.toString();
+        assertEquals(newField, old);
     }
 
     @Test
     void deleteField() {
         var old = createField();
-        fieldMapper.deleteField(old);
-        var now = fieldMapper.getField(old.getContent(), old.getName());
-        assertEquals(null, now);
+        assertEquals(1, fieldMapper.deleteField(old));
+        var now = fieldMapper.getField(old.content(), old.name());
+        assertNull(now);
     }
 
     @Test
     void updateField() {
         var old = createField();
-        old.setStr_value(RandomTools.getRandomText(8));
-        fieldMapper.updateField(old);
-        var now = fieldMapper.getField(old.getContent(), old.getName());
-        assertEquals(old, now);
+        old.str_value(RandomTools.getRandomText(8));
+        assertEquals(1, fieldMapper.updateField(old));
+        var now = fieldMapper.getField(old.content(), old.name());
+        //        now.toString();
+        assertEquals(now, old);
     }
 
 }

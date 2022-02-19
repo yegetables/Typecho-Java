@@ -44,41 +44,42 @@ class UserMapperTest extends BaseJunit5Test {
     //            @RepeatedTest(value = 8, name = "测试插入用户")
     User createUser() {
         User user = new User();
-        user.setName(RandomTools.getRandomName());
-        user.setPassword(RandomTools.getRandomPassword());
-        user.setMail(RandomTools.getRandomEmail());
-        user.setUrl(RandomTools.getRandomUrl());
-        user.setCreated(TimeTools.NowTime());
-        userMapper.addUser(user);
+        user.name(RandomTools.getRandomName());
+        user.password(RandomTools.getRandomPassword());
+        user.mail(RandomTools.getRandomEmail());
+        user.url(RandomTools.getRandomUrl());
+        user.created(TimeTools.NowTime());
+        assertEquals(1, userMapper.addUser(user));
         return user;
     }
 
     @Test
     void addUser() {
         var user = createUser();
-        var newUser = userMapper.getUserByName(user.getName());
-        assertEquals(user, newUser);
+        var newUser = userMapper.getUserByName(user.name());
+        //        newUser.toString();
+       assertEquals(user, newUser);
     }
 
     @Test
     void deleteUser() {
         User newUser = null;
         User getted = null;
-        newUser = userMapper.getUserById(createUser().getUid());
-        userMapper.deleteUserByUid(newUser.getUid());
-        getted = userMapper.getUserById(newUser.getUid());
+        newUser = userMapper.getUserById(createUser().uid());
+        assertEquals(1, userMapper.deleteUserByUid(newUser.uid()));
+        getted = userMapper.getUserById(newUser.uid());
         assertNull(getted, "delete UserById ");
 
         //
-        newUser = userMapper.getUserByName(createUser().getName());
-        userMapper.deleteUserByName(newUser.getName());
-        getted = userMapper.getUserByName(newUser.getName());
+        newUser = userMapper.getUserByName(createUser().name());
+        assertEquals(1, userMapper.deleteUserByName(newUser.name()));
+        getted = userMapper.getUserByName(newUser.name());
         assertNull(getted, "delete UserByName ");
 
         //
-        newUser = userMapper.getUserByMail(createUser().getMail());
-        userMapper.deleteUserByMail(newUser.getMail());
-        getted = userMapper.getUserByMail(newUser.getMail());
+        newUser = userMapper.getUserByMail(createUser().mail());
+        assertEquals(1, userMapper.deleteUserByMail(newUser.mail()));
+        getted = userMapper.getUserByMail(newUser.mail());
         assertNull(getted, "delete UserByMail ");
 
 
@@ -87,13 +88,14 @@ class UserMapperTest extends BaseJunit5Test {
     @Test
     void updateUserById() {
         var old = createUser();
-        old.setName(RandomTools.getRandomName());
-        old.setUrl(RandomTools.getRandomUrl());
-        userMapper.updateUser(old);
-        var lastUpdate = userMapper.getUserById(old.getUid());
-        //                assertEquals(old, lastUpdate);
-        userMapper.deleteUser(lastUpdate);
-        assertNull(userMapper.getUserById(lastUpdate.getUid()));
+        old.name(RandomTools.getRandomName());
+        old.url(RandomTools.getRandomUrl());
+        assertEquals(1, userMapper.updateUser(old));
+        var lastUpdate = userMapper.getUserById(old.uid());
+        //        lastUpdate.toString();
+       assertEquals(old, lastUpdate);
+        assertEquals(1, userMapper.deleteUser(lastUpdate));
+        assertNull(userMapper.getUserById(lastUpdate.uid()));
     }
 
 

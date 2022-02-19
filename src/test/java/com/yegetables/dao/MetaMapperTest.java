@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MetaMapperTest extends BaseJunit5Test {
 
@@ -27,46 +28,45 @@ class MetaMapperTest extends BaseJunit5Test {
 
     @Test
     void getMeta() {
-        var meta = metaMapper.getMeta(RandomTools.getRandom(metaMapper.getAllMetas()).getMid());
+        var meta = metaMapper.getMeta(RandomTools.getRandom(metaMapper.getAllMetas()).mid());
         System.out.println(meta);
     }
 
     Meta createMeta() {
         var meta = new Meta();
-        meta.setName(RandomTools.getRandomName());
-        meta.setSlug(RandomTools.getRandomName());
-        meta.setDescription(RandomTools.getRandomText(10));
-        meta.setParent(RandomTools.getRandom(metaMapper.getAllMetas()));
-        meta.setType("test");
-        metaMapper.addMeta(meta);
+        meta.name(RandomTools.getRandomName());
+        meta.slug(RandomTools.getRandomName());
+        meta.description(RandomTools.getRandomText(10));
+        meta.parent(RandomTools.getRandom(metaMapper.getAllMetas()));
+        meta.type("test");
+        assertEquals(1, metaMapper.addMeta(meta));
         return meta;
     }
 
     @Test
-    void insertMeta() {
+    void addMeta() {
         var meta = createMeta();
-        var newMeta = metaMapper.getMeta(meta.getMid());
-        System.out.println("newMeta = " + newMeta);
-        System.out.println("meta = " + meta);
-        assertEquals(meta, newMeta);
+        var newMeta = metaMapper.getMeta(meta.mid());
+        //        newMeta.toString();
+        assertEquals(newMeta, meta);
     }
 
     @Test
     void updateMeta() {
         var newMeta = createMeta();
-        newMeta.setName(RandomTools.getRandomName());
-        metaMapper.updateMeta(newMeta);
-        var updateMeta = metaMapper.getMeta(newMeta.getMid());
-        assertEquals(newMeta, updateMeta);
-        metaMapper.deleteMeta(updateMeta);
-
+        newMeta.name(RandomTools.getRandomName());
+        assertEquals(1, metaMapper.updateMeta(newMeta));
+        var updateMeta = metaMapper.getMeta(newMeta.mid());
+        //        updateMeta.toString();
+        assertEquals(updateMeta, newMeta);
+        assertEquals(1, metaMapper.deleteMeta(updateMeta));
     }
 
     @Test
     void deleteMeta() {
         var meta = createMeta();
-        metaMapper.deleteMeta(meta.getMid());
-        var deleteMeta = metaMapper.getMeta(meta.getMid());
-        assertEquals(null, deleteMeta);
+        assertEquals(1, metaMapper.deleteMeta(meta.mid()));
+        var deleteMeta = metaMapper.getMeta(meta.mid());
+        assertNull(deleteMeta);
     }
 }

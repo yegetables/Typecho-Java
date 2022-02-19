@@ -25,7 +25,9 @@
         <association property="author" column="authorId" javaType="user"
                      fetchType="lazy" select="com.yegetables.dao.UserMapper.getUserByAuthor"
         />
-        <association property="parent" column="parent" fetchType="lazy" select="getContentByParent" javaType="content"/>
+        <!--                     resultMap="com.yegetables.dao.UserMapper.usersResultMap"-->
+        
+        <association property="parent" column="parent"  fetchType="lazy"  select="getContentByParent" javaType="content"/>
     </resultMap>
     <sql id="pojoName">
         <trim prefix=" " suffix=" " suffixOverrides=",">
@@ -36,10 +38,10 @@
                 #{slug},
             </if>
             <if test='null != created'>
-                #{created,jdbcType=TIMESTAMP},
+                #{created,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test='null != modified'>
-                #{modified,jdbcType=TIMESTAMP},
+                #{modified,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test='null != text'>
                 #{text},
@@ -148,10 +150,10 @@
                 `slug` = #{slug},
             </if>
             <if test='null != created'>
-                `created`=#{created,jdbcType=TIMESTAMP},
+                `created`=#{created,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test='null != modified'>
-                `modified`=#{modified,jdbcType=TIMESTAMP},
+                `modified`=#{modified,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test='null != text'>
                 `text` = #{text},

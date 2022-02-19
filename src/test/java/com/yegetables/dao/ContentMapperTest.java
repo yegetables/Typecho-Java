@@ -53,39 +53,41 @@ class ContentMapperTest extends BaseJunit5Test {
 
     Content createContent() {
         Content content = new Content();
-        content.setText(RandomTools.getRandomText(8));
-        content.setTitle(RandomTools.getRandomName());
-        content.setCreated(TimeTools.NowTime());
-        content.setModified(content.getCreated());
-        content.setAuthor(RandomTools.getRandom(userMapper.getAllUsers()));
-        content.setParent(RandomTools.getRandom(contentMapper.getAllContents()));
-        contentMapper.addContent(content);
+        content.text(RandomTools.getRandomText(8));
+        content.title(RandomTools.getRandomName());
+        content.created(TimeTools.NowTime());
+        content.modified(content.created());
+        content.author(RandomTools.getRandom(userMapper.getAllUsers()));
+        content.parent(RandomTools.getRandom(contentMapper.getAllContents()));
+        assertEquals(1, contentMapper.addContent(content));
         return content;
     }
 
     @Test
     void addContent() {
         Content content = createContent();
-        var newContent = contentMapper.getContent(content.getCid());
-        assertEquals(content, newContent);
+        var newContent = contentMapper.getContent(content.cid());
+        //        newContent.toString();
+        assertEquals(newContent, content);
     }
 
 
     @Test
     void updateContent() {
         Content content = createContent();
-        content.setText(RandomTools.getRandomText(8));
-        contentMapper.updateContent(content);
-        var newContent = contentMapper.getContent(content.getCid());
-        assertEquals(content, newContent);
-        contentMapper.deleteContent(newContent);
+        content.text(RandomTools.getRandomText(8));
+        assertEquals(1, contentMapper.updateContent(content));
+        var newContent = contentMapper.getContent(content.cid());
+        //        newContent.toString();
+        assertEquals(newContent, content);
+        assertEquals(1, contentMapper.deleteContent(newContent));
     }
 
     @Test
     void deleteContent() {
         Content content = createContent();
-        contentMapper.deleteContent(content);
-        Content newContent = contentMapper.getContent(content.getCid());
+        assertEquals(1, contentMapper.deleteContent(content));
+        Content newContent = contentMapper.getContent(content.cid());
         assertNull(newContent);
 
     }
