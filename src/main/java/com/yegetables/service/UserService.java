@@ -1,10 +1,12 @@
 package com.yegetables.service;
 
+import com.yegetables.pojo.User;
+
 public interface UserService {
     //生成+发送+保存到mailMap
     ApiResult<String> sendEmailAuthorCode(String email);
 
-    ApiResult<String> register(String username, String password, String mail, String code);
+    ApiResult<User> register(String username, String password, String mail, String code);
     //
     //    void login(String username, String password);
     //

@@ -1,4 +1,31 @@
 user表的authCode不知道在哪用到 created,activated,logged三个时间是unsigned ing不是datatime -->自己写typeHander解决
 
-relationship的mapper.xml里面是 没有用懒加载
-其他的纪念开启了懒加载但是equals的时候老师未加载出来,不得已把equalsAndHash改成了onlyInclude
+relationship的mapper.xml里面是 没有用懒加载 其他的纪念开启了懒加载但是equals的时候老师未加载出来,不得已把equalsAndHash改成了onlyInclude
+
+## JSON
+
+传json两种方式
+
+1. 一种当作`application/x-www-form-urlencoded`类型的普通字符串解析 ---->使用@RequestParam
+2. 另一种 使用 `application/json`类型 解析 @RequestBody
+
+前端不指定Content-Type时，jq默认使用 `application/x-www-form-urlencoded`类型， 该编码方式会自动把`JSON数据转换成字符串`,使用 `@RequestParam` 可以接收
+
+[Spring MVC获取不到post提交的multipart/form-data格式的数据](https://blog.csdn.net/qq_30038111/article/details/82885225)
+
+```xml
+
+<dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.4</version>
+</dependency>
+```
+
+```xml
+
+<bean id="multipartResolver"
+      class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+```
+
+|

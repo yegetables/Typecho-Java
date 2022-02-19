@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
-@Scope
 public class BaseServiceImpl {
     //    protected static Logger log;
     protected static final Logger log = LogManager.getLogger(BaseServiceImpl.class);

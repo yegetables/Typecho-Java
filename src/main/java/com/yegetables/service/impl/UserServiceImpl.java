@@ -6,6 +6,7 @@ import com.yegetables.service.ApiResultStatus;
 import com.yegetables.service.UserService;
 import com.yegetables.utils.MailTools;
 import com.yegetables.utils.RandomTools;
+import com.yegetables.utils.TimeTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,27 +46,27 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
-
-    public ApiResult<String> register(String username, String password, String mail, String code) {
+    public ApiResult<User> register(String username, String password, String mail, String code) {
         if (mailAuthCodeMap.get(mail) == null)
         {
-            return new ApiResult<String>().code(ApiResultStatus.Error).message("请先发送验证码");
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("请先发送验证码");
         }
         if (!mailAuthCodeMap.get(mail).equals(code))
         {
-            return new ApiResult<String>().code(ApiResultStatus.Error).message("验证码错误,请重试");
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("验证码错误,请重试");
         }
         try
         {
-            Integer sum = userMapper.addUser(new User().mail(mail).name(username).password(password));
-            if (sum != 1) throw new Exception();
-            return new ApiResult<String>().code(ApiResultStatus.Success).message("注册成功");
-
+            User newUser = new User().mail(mail).name(username).password(password).created(TimeTools.NowTime()).activated(TimeTools.NowTime());
+            Integer sum = userMapper.addUser(newUser);
+            if (sum != 1) throw new Exception("添加用户失败" + newUser);
+            else newUser = userMapper.getUserById(newUser.uid()); //获得数据库默认值  非必要
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("注册成功").data(newUser);
         } catch (Exception e)
         {
             String errorMessage = "注册失败";
             log.warn(errorMessage, e);
-            return new ApiResult<String>().code(ApiResultStatus.Error).message("注册失败,发生未知错误");
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("注册失败,发生未知错误");
         }
     }
 

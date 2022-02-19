@@ -41,6 +41,7 @@
         <property name="from" value="${mail.username}"/>
         <property name="subject" value="${mail.subject}"/>
     </bean>
+    <bean id="gson" class="com.google.gson.Gson"/>
 
 
 </beans>
