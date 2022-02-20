@@ -41,7 +41,11 @@ public class WebControllerTest extends BaseController {
         return "test";
     }
 
-
+    @RequestMapping(value = "/chinese")
+    @ResponseBody
+    public String chinese1(){
+        return "我是中文测试";
+    }
 
 
 

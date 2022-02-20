@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.platform.commons.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -15,9 +14,9 @@ import java.util.Map;
 @Log4j2
 public class JsonTools {
 
-    @Autowired
-    Gson gson;
+    private final Gson gson;
 
+    public JsonTools(Gson gson) {this.gson = gson;}
 
     public static boolean isBadJson(String json) {
         return !isGoodJson(json);
@@ -49,7 +48,6 @@ public class JsonTools {
         try
         {
             Map map = gson.fromJson(json, Map.class);
-
             return map;
         } catch (Exception e)
         {
@@ -57,4 +55,5 @@ public class JsonTools {
         }
         return new HashMap();
     }
+
 }
