@@ -24,6 +24,10 @@ public interface UserMapper {
         return getUser(null, null, mail);
     }
 
+    default User getUser(User user) {
+        return getUser(user.uid(), user.name(), user.mail());
+    }
+
     default Integer deleteUserByUid(Long uid) {
         return deleteUser(uid, null, null);
     }

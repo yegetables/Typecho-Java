@@ -5,7 +5,7 @@
 * Spring
 * Spring MVC
 * Mybatis
-* thymeleaf
+* [TODO]thymeleaf
 * [TODO] redis
 
 ## 组件选取
@@ -25,20 +25,25 @@
 3. 因为 本人博客多为`markdown`撰写并上传到`github`，`typecho`虽然插件支持`markdown`，但是只能打开后台手动编辑修改，修改文章时需要多处修改引来不变，所以我决定开发 支持git管理的`markdown`
    文章的博客系统。
 4. 本人多年来喜好折腾博客，所以自己写了一个博客系统，主要是为了满足自定义的需求，同时为了练习新技术。
+5. 为其他应用提供api去协同处理博客内容,增加生活中的博客存在感和参与感.
 
 ## 使用注意事项
 
+在`src\main\resources\`目录下将文件`config.properties.bak`更名为 `config.properties`
+
 1. 数据库配置
 
-> 在`src\main\resources\`目录下将文件`db.properties.bak`更名为 `db.properties` 。并在文件中配置 数据库用户名，密码，ip，端口 等一些内容。
+> 在 `config.properties` 文件中配置 数据库用户名，密码，ip，端口 等一些内容。
 
 2. 邮件发信人配置
 
-> 在`src\main\resources\`目录下将文件`mail.properties.bak`更名为 `mail.properties` 。并在文件中配置 邮箱的账号密码等。
+> 在 `config.properties` 文件中配置 邮箱的账号密码等。
 
 3. 日志位置(可选)
 
 > 在`src\main\resources\`目录下将文件`log4j2.xml`中 `第11行` 关于 `  <property name="basePath">D:\Typecho-Java\src\main\resources\log</property> `更改为 `${web:rootDir}/log`或 参考注释配置本机路径 。
+
+4. 前后端交互接口参考文档 [暂时未空]()  ,须明确使用 `application/json` 协议。
 
 ## 参考资料
 

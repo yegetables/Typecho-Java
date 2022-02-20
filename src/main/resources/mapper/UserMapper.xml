@@ -85,16 +85,24 @@
         </trim>
     </sql>
     <sql id="findCondition">
-        where 1=0
-        <if test="uid != null ">
-            or `uid` = #{uid}
-        </if>
-        <if test="mail != null ">
-            or `mail` = #{mail}
-        </if>
-        <if test="name != null ">
-            or `name` = #{name}
-        </if>
+        where
+        <choose>
+            <when test="uid != null or mail !=null or name != null">
+                1=1
+                <if test="uid != null ">
+                    and `uid` = #{uid}
+                </if>
+                <if test="mail != null ">
+                    and `mail` = #{mail}
+                </if>
+                <if test="name != null ">
+                    and `name` = #{name}
+                </if>
+            </when>
+            <otherwise>
+                1=0
+            </otherwise>
+        </choose>
     </sql>
     <sql id="updateName">
         <trim prefix=" " suffix=" " prefixOverrides=",">
@@ -172,6 +180,10 @@
         <set>
             <include refid="updateName"/>
         </set>
-        <include refid="findCondition"/>
+        where
+        1=0
+        <if test="uid != null ">
+            or `uid` = #{uid}
+        </if>
     </update>
 </mapper>

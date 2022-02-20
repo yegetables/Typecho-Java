@@ -30,23 +30,10 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/sendEmail", method = RequestMethod.POST)
     @ResponseBody
     public String sendEmail(@RequestBody String email) throws MailException {
-        //        log.warn("send  email [" + email + "]");
-        if (JsonTools.isJson(email))
-        {
-            email = StringTools.mapGetStringKey("email", jsonTools.JsonToMap(email));
-            //            email = map.get("email") != null ? String.valueOf(map.get("email")) : "";
-        }
-        ApiResult<String> result;
-        if (StringTools.isEmail(email))
-        {
-            //            result = new ApiResult().code(ApiResultStatus.Success).message("发送成功");
-            result = userService.sendEmailAuthorCode(email);
-        }
-        else
-        {
-            result = new ApiResult<String>().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]");
-        }//        log.info("send email result=[" + result.toString() + "]");
-        return result.toString();
+        if (JsonTools.isJson(email)) email = StringTools.mapGetStringKey("email", jsonTools.JsonToMap(email));
+        if (!StringTools.isEmail(email))
+            return new ApiResult<String>().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]").toString();
+        return userService.sendEmailAuthorCode(email).toString();
     }
 
     /**
@@ -62,17 +49,9 @@ public class UserController extends BaseController {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
         String code = StringTools.mapGetStringKey("code", map);
-        ApiResult<User> result;
-        if (StringTools.isGoodUser(username, password, email, code))
-        {
-            result = userService.register(username, password, email, code);
-        }
-        else
-        {
-            result = new ApiResult<User>().code(ApiResultStatus.Error).message("注册信息不正确[" + map + "]");
-        }
-        //        log.info("send email result=[" + result.toString() + "]");
-        return result.toString();
+        if (!StringTools.isGoodUser(username, password, email, code))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("注册信息不正确[" + map + "]").toString();
+        return userService.register(username, password, email, code).toString();
     }
 
     /**
@@ -86,17 +65,63 @@ public class UserController extends BaseController {
     public String LoginAccount(@RequestBody Map<String, String> map) {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
-        ApiResult<User> result;
-        if (StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()) && StringTools.isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
+        if (!StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()) || !StringTools.isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("登录信息不正确[" + map + "]").toString();
+        return userService.login(username, password).toString();
+    }
+
+
+    /**
+     * 用户信息修改
+     *
+     * @param map 必须有(uid),可选(username，password，url,screenName)暂不支持(email,group)
+     * @return ApiResult的json串
+     */
+    public String changeUserInfo(@RequestBody Map map) {
+        if (!map.containsKey("uid"))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不能为空").toString();
+        Long uid = StringTools.mapGetLongKey("uid", map);
+        if (uid <= 0)
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不正确[" + map + "]").toString();
+        User user = new User().uid(uid);
+        if (map.containsKey("username"))
         {
-            result = userService.login(username, password);
+            String newUserName = StringTools.mapGetStringKey("username", map);
+            if (StringTools.isInLength(newUserName, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
+                user.name(newUserName);
         }
-        else
+        if (map.containsKey("password"))
         {
-            result = new ApiResult<User>().code(ApiResultStatus.Error).message("登录信息不正确[" + map + "]");
+            String newPassword = StringTools.mapGetStringKey("password", map);
+            if (StringTools.isInLength(newPassword, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
+                user.password(newPassword);
         }
-        //        log.info("send email result=[" + result.toString() + "]");
-        return result.toString();
+        if (map.containsKey("url"))
+        {
+            String newUrl = StringTools.mapGetStringKey("url", map);
+            user.url(newUrl);
+        }
+        if (map.containsKey("screenName"))
+        {
+            String newScreenName = StringTools.mapGetStringKey("screenName", map);
+            user.screenName(newScreenName);
+        }
+        //暂不支持TODO(支持邮箱更改,用户组更改)
+        //        if (map.containsKey("email"))
+        //        {
+        //            String newEmail = StringTools.mapGetStringKey("email", map);
+        //            if (StringTools.isEmail(newEmail))
+        //            {
+        //                // TODO:邮箱是否已经被注册,＋验证码
+        //                // user.email(newEmail);
+        //            }
+        //        }
+        //        if (map.containsKey("group"))
+        //        {
+        //            String newGroup = StringTools.mapGetStringKey("group", map);
+        //            //            user.group(newGroup);
+        //        }
+        return userService.changeUserInfo(user).toString();
     }
 
 

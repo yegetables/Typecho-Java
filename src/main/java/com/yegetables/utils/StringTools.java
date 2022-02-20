@@ -77,4 +77,16 @@ public class StringTools {
             return true;
         return false;
     }
+
+    public static Long mapGetLongKey(String key, Map map) {
+        String str = mapGetStringKey(key, map);
+        try
+        {
+            return Long.parseLong(str);
+        } catch (Exception e)
+        {
+            log.warn("mapGetLongKey error, key: {}, value: {}, error: {}", key, str, e.getMessage());
+            return 0L;
+        }
+    }
 }

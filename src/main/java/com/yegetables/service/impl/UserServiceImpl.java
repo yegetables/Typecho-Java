@@ -25,7 +25,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     @Override
     public ApiResult<String> sendEmailAuthorCode(String email) {
-        //        String text = RandomTools.getRandomText(AuthorCodeLength);
+        if (getUser(new User().mail(email)) != null)
+            return new ApiResult<String>().code(ApiResultStatus.Error).message("该邮箱已经注册");
         String text = RandomTools.getRandomAuthorCode(PropertiesConfig.getAuthCodeLength());
         try
         {
@@ -47,13 +48,14 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public ApiResult<User> register(String username, String password, String mail, String code) {
         if (!mailAuthCodeMap.containsKey(mail))
-        {
             return new ApiResult<User>().code(ApiResultStatus.Error).message("请先发送验证码");
-        }
         if (!StringUtils.equalsIgnoreCase(mailAuthCodeMap.get(mail), code))
-        {
             return new ApiResult<User>().code(ApiResultStatus.Error).message("验证码错误,请重试");
-        }
+        if (getUser(new User().name(username)) != null)
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("该用户名已经注册");
+        if (getUser(new User().mail(mail)) != null)
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("该邮箱已经注册");
+        mailAuthCodeMap.remove(mail);
         User newUser = new User().mail(mail).name(username).password(password).created(TimeTools.NowTime()).activated(TimeTools.NowTime());
         try
         {
@@ -86,6 +88,43 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             log.error(errorMessage, e);
             return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage).data(user);
         }
+    }
+
+    @Override
+    public ApiResult<User> changeUserInfo(User user) {
+        //查重
+        try
+        {
+
+            User oldUser = userMapper.getUserById(user.uid());
+            if (oldUser == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户不存在");
+            if (user.name() != null && userMapper.getUserByName(user.name()) != null)
+                return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名已存在");
+            if (user.mail() != null && userMapper.getUserByMail(user.mail()) != null)
+                return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱已存在");
+        } catch (Exception e)
+        {
+            String errorMessage = "查找用户失败";
+            log.error(errorMessage, e);
+            return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage);
+        }
+        try
+        {
+            Integer sum = userMapper.updateUser(user);
+            if (sum != 1) throw new Exception("更新用户信息失败");
+            User newUser = userMapper.getUserById(user.uid());
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(newUser);
+        } catch (Exception e)
+        {
+            String errorMessage = "更新用户信息失败";
+            log.error(errorMessage, e);
+            return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage);
+        }
+    }
+
+    @Override
+    public User getUser(User user) {
+        return userMapper.getUser(user);
     }
 
 

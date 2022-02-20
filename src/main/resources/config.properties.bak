@@ -16,3 +16,12 @@ password=123456
 subject=Typecho-Java AuthCode
 defaultEncoding=UTF-8
 port=465
+# 用户配置
+user.AuthCode.Length=8
+user.Name.MaxLength=32
+user.Name.MinLength=0
+user.Password.MaxLength=64
+user.Password.MinLength=0
+user.Email.MaxLength=150
+user.Email.MinLength=0
+user.Email.RegExp.regexp=^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$
