@@ -28,4 +28,4 @@ relationship的mapper.xml里面是 没有用懒加载 其他的纪念开启了�
       class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 ```
 
-|
+[spring中使用@value注入static静态字符串变量](https://blog.csdn.net/qq_27579471/article/details/113360078)

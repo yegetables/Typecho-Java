@@ -7,11 +7,8 @@ public interface UserService {
     ApiResult<String> sendEmailAuthorCode(String email);
 
     ApiResult<User> register(String username, String password, String mail, String code);
-    //
-    //    void login(String username, String password);
-    //
-    //    void logout();
-    //
+
+    ApiResult<User> login(String username, String password);
     //    void changePassword(String oldPassword, String newPassword);
     //
     //    void changeUsername(String oldUsername, String newUsername);

@@ -5,6 +5,7 @@ import com.yegetables.service.ApiResult;
 import com.yegetables.service.ApiResultStatus;
 import com.yegetables.service.UserService;
 import com.yegetables.utils.MailTools;
+import com.yegetables.utils.PropertiesConfig;
 import com.yegetables.utils.RandomTools;
 import com.yegetables.utils.TimeTools;
 import org.apache.commons.lang3.StringUtils;
@@ -20,16 +21,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final Map<String, String> mailAuthCodeMap = new HashMap<>();
     @Autowired
     MailTools mailTools;
-    final Integer AuthorCodeLength = 8;
 
-    void test() {
-        log.warn("hello");
-    }
 
     @Override
     public ApiResult<String> sendEmailAuthorCode(String email) {
         //        String text = RandomTools.getRandomText(AuthorCodeLength);
-        String text = RandomTools.getRandomAuthorCode(AuthorCodeLength);
+        String text = RandomTools.getRandomAuthorCode(PropertiesConfig.getAuthCodeLength());
         try
         {
             mailTools.sendSimpleMail(email, "验证码", "忽略大小写\n" + text + "\n5分钟内有效");
@@ -66,11 +63,34 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             return new ApiResult<User>().code(ApiResultStatus.Success).message("注册成功").data(newUser);
         } catch (Exception e)
         {
+            //TODO: 删除验证码Redis||数据库插入失败因为邮箱/用户名重复等原因
             String errorMessage = "注册失败";
             log.warn(errorMessage, e);
             return new ApiResult<User>().code(ApiResultStatus.Error).message("注册失败,发生未知错误").data(newUser);
         }
     }
 
+    @Override
+    public ApiResult<User> login(String username, String password) {
+        User user = userMapper.getUserByName(username);
+        if (user == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名不存在");
+        if (!StringUtils.equals(user.password(), password))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("密码错误");
+        try
+        {
+            userMapper.updateUser(user.logged(TimeTools.NowTime()).activated(TimeTools.NowTime()));
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("登录成功").data(user);
+        } catch (Exception e)
+        {
+            String errorMessage = "登录失败";
+            log.error(errorMessage, e);
+            return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage).data(user);
+        }
+    }
+
+
+    void test() {
+        log.warn("hello");
+    }
 
 }

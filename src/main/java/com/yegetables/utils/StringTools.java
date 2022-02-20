@@ -1,16 +1,23 @@
 package com.yegetables.utils;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//@Service
-//@Log4j2
+@Service
+@Log4j2
 public class StringTools {
+
+    static String emailRegex = PropertiesConfig.getEmailRegex();
+
     public static boolean isEmail(String email) {
         email = toOkString(email);
+        if (!isInLength(email, PropertiesConfig.getEmailMinLength(), PropertiesConfig.getEmailMaxLength()))
+            return false;
         /*
          * " \w"：匹配字母、数字、下划线。等价于'[A-Za-z0-9_]'。
          * "|"  : 或的意思，就是二选一
@@ -19,7 +26,7 @@ public class StringTools {
          * "{n,m}" : 至少出现n个，最多出现m个
          * "$" : 以前面的字符结束
          */
-        String REGEX = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
+        String REGEX = emailRegex;
         Pattern p = Pattern.compile(REGEX);
         Matcher matcher = p.matcher(email);
         return matcher.matches();
@@ -66,10 +73,8 @@ public class StringTools {
         password = toOkString(password);
         email = toOkString(email);
         code = toOkString(code);
-        if (StringTools.isEmail(email) && isInLength(email, 0, 150) && isInLength(password, 0, 64) && isInLength(username, 0, 32) && isInLength(code, 0, 30))
-        {
+        if (StringTools.isEmail(email) && isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()) && isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()) && code.length() == PropertiesConfig.getAuthCodeLength())
             return true;
-        }
         return false;
     }
 }

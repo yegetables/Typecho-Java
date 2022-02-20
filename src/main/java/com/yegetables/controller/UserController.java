@@ -4,6 +4,7 @@ import com.yegetables.pojo.User;
 import com.yegetables.service.ApiResult;
 import com.yegetables.service.ApiResultStatus;
 import com.yegetables.utils.JsonTools;
+import com.yegetables.utils.PropertiesConfig;
 import com.yegetables.utils.StringTools;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController extends BaseController {
 
+
     /**
      * 直接发送邮件验证码
      *
@@ -31,11 +33,10 @@ public class UserController extends BaseController {
         //        log.warn("send  email [" + email + "]");
         if (JsonTools.isJson(email))
         {
-            Map map = jsonTools.JsonToMap(email);
-            email = StringTools.mapGetStringKey("email", map);
+            email = StringTools.mapGetStringKey("email", jsonTools.JsonToMap(email));
             //            email = map.get("email") != null ? String.valueOf(map.get("email")) : "";
         }
-        ApiResult result = null;
+        ApiResult<String> result;
         if (StringTools.isEmail(email))
         {
             //            result = new ApiResult().code(ApiResultStatus.Success).message("发送成功");
@@ -43,7 +44,7 @@ public class UserController extends BaseController {
         }
         else
         {
-            result = new ApiResult().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]");
+            result = new ApiResult<String>().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]");
         }//        log.info("send email result=[" + result.toString() + "]");
         return result.toString();
     }
@@ -61,33 +62,38 @@ public class UserController extends BaseController {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
         String code = StringTools.mapGetStringKey("code", map);
-        ApiResult<User> result = null;
+        ApiResult<User> result;
         if (StringTools.isGoodUser(username, password, email, code))
         {
             result = userService.register(username, password, email, code);
         }
         else
         {
-            result = new ApiResult().code(ApiResultStatus.Error).message("注册信息不正确[" + map + "]");
+            result = new ApiResult<User>().code(ApiResultStatus.Error).message("注册信息不正确[" + map + "]");
         }
         //        log.info("send email result=[" + result.toString() + "]");
         return result.toString();
     }
 
-
+    /**
+     * 用户登录
+     *
+     * @param map 包含用户名，密码
+     * @return ApiResult的json串
+     */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public String LoginAccount(@RequestBody Map<String, String> map) {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
-        ApiResult<User> result = null;
-        if (StringTools.isInLength(username, 0, 32) && StringTools.isInLength(password, 0, 64))
+        ApiResult<User> result;
+        if (StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()) && StringTools.isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
         {
             result = userService.login(username, password);
         }
         else
         {
-            result = new ApiResult().code(ApiResultStatus.Error).message("登录信息不正确[" + map + "]");
+            result = new ApiResult<User>().code(ApiResultStatus.Error).message("登录信息不正确[" + map + "]");
         }
         //        log.info("send email result=[" + result.toString() + "]");
         return result.toString();
