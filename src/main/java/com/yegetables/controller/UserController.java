@@ -77,6 +77,8 @@ public class UserController extends BaseController {
      * @param map 必须有(uid),可选(username，password，url,screenName)暂不支持(email,group)
      * @return ApiResult的json串
      */
+    @RequestMapping(value = "/changeUserInfo", method = RequestMethod.POST)
+    @ResponseBody
     public String changeUserInfo(@RequestBody Map map) {
         if (!map.containsKey("uid"))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不能为空").toString();
@@ -125,4 +127,39 @@ public class UserController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public String getUserInfo(@RequestBody Map map) {
+        if (map.containsKey("username"))
+        {
+            String username = StringTools.mapGetStringKey("username", map);
+            if (StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
+            {
+                User user = userService.getUser(new User().name(username));
+                return new ApiResult<User>().message("获取用户信息成功").data(user).toString();
+            }
+            else return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名不正确[" + map + "]").toString();
+        }
+        if (map.containsKey("uid"))
+        {
+            Long uid = StringTools.mapGetLongKey("uid", map);
+            if (uid > 0)
+            {
+                User user = userService.getUser(new User().uid(uid));
+                return new ApiResult<User>().message("获取用户信息成功").data(user).toString();
+            }
+            else return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不正确[" + map + "]").toString();
+        }
+        if (map.containsKey("email"))
+        {
+            String email = StringTools.mapGetStringKey("email", map);
+            if (StringTools.isEmail(email))
+            {
+                User user = userService.getUser(new User().mail(email));
+                return new ApiResult<User>().message("获取用户信息成功").data(user).toString();
+            }
+            else return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱不正确[" + map + "]").toString();
+        }
+        return new ApiResult<User>().code(ApiResultStatus.Error).message("参数不正确[" + map + "]" + ",需要uid,username,email任意一个").toString();
+    }
 }
