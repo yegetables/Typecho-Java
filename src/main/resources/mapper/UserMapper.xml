@@ -37,7 +37,7 @@
                 #{created,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test="activated != null">
-                #{activited,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
+                #{activated,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
             </if>
             <if test="logged != null">
                 #{logged,jdbcType=TIMESTAMP,typeHandler=com.yegetables.utils.TimestampTypeHandler},
@@ -71,7 +71,7 @@
                 `created`,
             </if>
             <if test="activated != null">
-                `activited`,
+                `activated`,
             </if>
             <if test="logged != null">
                 `logged`,

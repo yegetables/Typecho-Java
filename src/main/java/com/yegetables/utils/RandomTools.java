@@ -27,6 +27,11 @@ public class RandomTools {
         return RandomStringUtils.randomAlphanumeric(i);
     }
 
+    public static String getRandomAuthorCode(int i) {
+        //生成验证码,排除易错字符,忽略大小写
+        return RandomStringUtils.random(i, "abcdefghkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789");
+    }
+
     public static <T> T getRandom(List<T> list) {
         int size = list.size();
         return list.get(RandomUtils.nextInt(0, size));
