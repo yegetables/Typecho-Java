@@ -13,9 +13,12 @@
         <property name="url" value="${jdbc.jdbcUrl}"/>
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
         <!--        druid连接池私有属性-->
-<!--        <property name="initialSize" value="${jdbc.initialSize}"/>-->
-<!--        <property name="maxActive" value="${jdbc.maxActive}"/>-->
-<!--        <property name="maxWait" value="${jdbc.maxWait}"/>-->
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <!--        <property name="initialSize" value="10"/>-->
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <!--        <property name="maxActive" value="10"/>-->
+        <property name="maxWait" value="${jdbc.maxWait}"/>
+        <!--        <property name="maxWait" value="2000"/>-->
         <!--                关闭连接后不自动commit -->
         <property name="defaultAutoCommit" value="false"/>
         <!--                获取连接超时时间 -->

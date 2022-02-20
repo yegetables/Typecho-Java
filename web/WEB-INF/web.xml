@@ -28,7 +28,7 @@
         -->
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>classpath:spring/spring-*.xml</param-value>
+            <param-value>classpath:spring/spring.xml</param-value>
         </init-param>
         <!--        应该在 Web 应用程序启动时加载-->
         <load-on-startup>1</load-on-startup>

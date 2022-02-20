@@ -34,8 +34,10 @@ public class UserController extends BaseController {
             //            result = new ApiResult().code(ApiResultStatus.Success).message("发送成功");
             result = userService.sendEmailAuthorCode(email);
         }
-        else result = new ApiResult().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]");
-        //        log.info("send email result=[" + result.toString() + "]");
+        else
+        {
+            result = new ApiResult().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]");
+        }//        log.info("send email result=[" + result.toString() + "]");
         return result.toString();
     }
 }

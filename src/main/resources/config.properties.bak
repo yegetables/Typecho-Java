@@ -1,3 +1,4 @@
+# 数据库连接
 jdbc.username=root
 jdbc.password=123456
 jdbc.database=singleBlog
@@ -8,3 +9,10 @@ jdbc.driverClassName=com.mysql.cj.jdbc.Driver
 jdbc.initialSize=10
 jdbc.maxActive=10
 jdbc.maxWait=2000
+# 发信邮箱
+host=smtp.126.com
+username=ajian1234@126.com
+password=123456
+subject=Typecho-Java AuthCode
+defaultEncoding=UTF-8
+port=465
