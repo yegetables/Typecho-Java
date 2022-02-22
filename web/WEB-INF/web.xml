@@ -14,8 +14,9 @@
         <!-- Log4j的监听器要放在spring监听器前面 -->
         <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
     </listener>
-
-
+    <!-- <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener> -->
 
 
     <!-- 配置DispatcherServlet -->

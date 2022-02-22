@@ -1,7 +1,6 @@
 package com.yegetables.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
+import com.alibaba.fastjson.JSON;
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.platform.commons.util.StringUtils;
@@ -14,9 +13,9 @@ import java.util.Map;
 @Log4j2
 public class JsonTools {
 
-    private final Gson gson;
+    //    private final Gson json;
 
-    public JsonTools(Gson gson) {this.gson = gson;}
+    //    public JsonTools(Gson gson) {this.json = gson;}
 
     public static boolean isBadJson(String json) {
         return !isGoodJson(json);
@@ -29,7 +28,7 @@ public class JsonTools {
         }
         try
         {
-            return JsonParser.parseString(json) != null;
+            return JSON.toJSON(json) != null;
         } catch (JsonSyntaxException e)
         {
             return false;
@@ -47,7 +46,7 @@ public class JsonTools {
         }
         try
         {
-            Map map = gson.fromJson(json, Map.class);
+            Map map =  JSON.parseObject(json, Map.class);
             return map;
         } catch (Exception e)
         {

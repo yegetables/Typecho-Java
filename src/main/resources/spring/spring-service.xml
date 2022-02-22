@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <!--    扫描注解@Service-->
-    <context:component-scan base-package="com.yegetables"/>
+    <!--     <context:component-scan base-package="com.yegetables.service"/>-->
+    <!--    <context:component-scan base-package="com.yegetables.utils"/> -->
     <!--    <context:component-scan base-package="com.yegetables.utils"/>-->
     <!--   默认启用：配置基于注解的声明式事务，可以直接在方法上@Transaction-->
     <tx:annotation-driven transaction-manager="transactionManager"/>
@@ -24,24 +22,27 @@
     </bean>
 
     <!--    <context:property-placeholder location="classpath:mail.properties"/>-->
-    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="${mail.host}"/>
-        <property name="username" value="${mail.username}"/>
-        <property name="password" value="${mail.password}"/>
-        <property name="defaultEncoding" value="${mail.defaultEncoding}"/>
-        <property name="javaMailProperties">
-            <props>
-                <prop key="mail.smtp.auth">true</prop>
-                <prop key="mail.smtp.ssl.enable">true</prop>
-                <prop key="mail.smtp.port">${mail.port}</prop>
-            </props>
-        </property>
-    </bean>
-    <bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
-        <property name="from" value="${mail.username}"/>
-        <property name="subject" value="${mail.subject}"/>
-    </bean>
-    <bean id="gson" class="com.google.gson.Gson"/>
+
+    <!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+    <!--        <property name="host" value="${mail.host}"/>-->
+    <!--        <property name="username" value="${mail.username}"/>-->
+    <!--        <property name="password" value="${mail.password}"/>-->
+    <!--        <property name="defaultEncoding" value="${mail.defaultEncoding}"/>-->
+    <!--        <property name="javaMailProperties">-->
+    <!--            <props>-->
+    <!--                <prop key="mail.smtp.auth">true</prop>-->
+    <!--                <prop key="mail.smtp.ssl.enable">true</prop>-->
+    <!--                <prop key="mail.smtp.port">${mail.port}</prop>-->
+    <!--            </props>-->
+    <!--        </property>-->
+    <!--    </bean>-->
+    <!--    <bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">-->
+    <!--        <property name="from" value="${mail.username}"/>-->
+    <!--        <property name="subject" value="${mail.subject}"/>-->
+    <!--    </bean>-->
+
+
+    <!--    <bean id="gson" class="com.google.gson.Gson"/>-->
 
 
 </beans>

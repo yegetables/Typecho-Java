@@ -29,3 +29,10 @@ relationship的mapper.xml里面是 没有用懒加载 其他的纪念开启了�
 ```
 
 [spring中使用@value注入static静态字符串变量](https://blog.csdn.net/qq_27579471/article/details/113360078)
+
+使用@Accessors(fluent = true)
+![img.png](https://tu.yegetables.com/images/2022/02/22/img.png)会导致fastjson的反序列化失效
+
+https://xz.aliyun.com/t/7027
+
+所以在基础上又手动写了get/set方法帮助序列化进行

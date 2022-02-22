@@ -4,13 +4,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
 @Accessors(fluent = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
-public class Comment {
+public class Comment implements Serializable {
+
     /**
      * 评论id
      */
@@ -70,5 +72,132 @@ public class Comment {
      */
     private Comment parent;
 
+
+
+    public Long getCoid() {
+        return coid;
+    }
+
+    public Comment setCoid(Long coid) {
+        this.coid = coid;
+        return this;
+    }
+
+    public Content getContent() {
+        return content;
+    }
+
+    public Comment setContent(Content content) {
+        this.content = content;
+        return this;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public Comment setCreated(Timestamp created) {
+        this.created = created;
+        return this;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public Comment setAuthorName(String authorName) {
+        this.authorName = authorName;
+        return this;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public Comment setAuthorId(Long authorId) {
+        this.authorId = authorId;
+        return this;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public Comment setOwner(User owner) {
+        this.owner = owner;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Comment setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Comment setUrl(String url) {
+        this.url = url;
+        return this;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public Comment setIp(String ip) {
+        this.ip = ip;
+        return this;
+    }
+
+    public String getAgent() {
+        return agent;
+    }
+
+    public Comment setAgent(String agent) {
+        this.agent = agent;
+        return this;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Comment setText(String text) {
+        this.text = text;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Comment setType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Comment setStatus(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public Comment getParent() {
+        return parent;
+    }
+
+    public Comment setParent(Comment parent) {
+        this.parent = parent;
+        return this;
+    }
 
 }

@@ -7,5 +7,7 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
     <context:property-placeholder location="classpath:config.properties"/>
+    <context:component-scan base-package="com.yegetables"/>
     <import resource="spring-*.xml"/>
+    <!--    <bean class="com.yegetables.utils.BeanApplicationContextTools" lazy-init="false"/>-->
 </beans>

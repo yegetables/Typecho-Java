@@ -42,4 +42,23 @@
         <property name="basePackage" value="com.yegetables.dao"/>
     </bean>
 
+<!--    <bean id="redisStandaloneConfiguration"-->
+<!--          class="org.springframework.data.redis.connection.RedisStandaloneConfiguration">-->
+<!--        <property name="hostName" value="${redis.host}"/>-->
+<!--        <property name="port" value="${redis.port}"/>-->
+<!--        <property name="password" value="${redis.password}"/>-->
+<!--    </bean>-->
+<!--    <bean id="genericObjectPoolConfig" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
+<!--        <constructor-arg name="standaloneConfig" ref="redisStandaloneConfiguration"/>-->
+<!--        <constructor-arg name="clientConfig" ref="redisClientConfiguration"/>-->
+<!--    </bean>-->
+<!--    <bean id="redisClientConfiguration"-->
+<!--          class="org.springframework.data.redis.connection.jedis.JedisClientConfiguration">-->
+<!--    </bean>-->
+<!--    <bean id="redisClientConfigurationBuilder"-->
+<!--          class="org.springframework.data.redis.connection.jedis.JedisClientConfiguration.DefaultJedisClientConfigurationBuilder">-->
+<!--        <property name="poolConfig" ref="genericObjectPoolConfig"/>-->
+<!--    </bean>-->
+
+
 </beans>

@@ -4,13 +4,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
 @Accessors(fluent = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
-public class User {
+public class User implements Serializable {
     /**
      * 用户id  	user表主键 主键,非负,自增
      */
@@ -59,4 +60,103 @@ public class User {
      * 用户登录验证码
      */
     private String authCode;
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public User setUid(Long uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public User setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public User setMail(String mail) {
+        this.mail = mail;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public User setUrl(String url) {
+        this.url = url;
+        return this;
+    }
+
+    public String getScreenName() {
+        return screenName;
+    }
+
+    public User setScreenName(String screenName) {
+        this.screenName = screenName;
+        return this;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public User setCreated(Timestamp created) {
+        this.created = created;
+        return this;
+    }
+
+    public Timestamp getActivated() {
+        return activated;
+    }
+
+    public User setActivated(Timestamp activated) {
+        this.activated = activated;
+        return this;
+    }
+
+    public Timestamp getLogged() {
+        return logged;
+    }
+
+    public User setLogged(Timestamp logged) {
+        this.logged = logged;
+        return this;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public User setGroup(String group) {
+        this.group = group;
+        return this;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public User setAuthCode(String authCode) {
+        this.authCode = authCode;
+        return this;
+    }
 }

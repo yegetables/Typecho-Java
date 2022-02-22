@@ -1,8 +1,8 @@
 package com.yegetables.service.impl;
 
 import com.yegetables.pojo.User;
-import com.yegetables.service.ApiResult;
-import com.yegetables.service.ApiResultStatus;
+import com.yegetables.controller.dto.ApiResult;
+import com.yegetables.controller.dto.ApiResultStatus;
 import com.yegetables.service.UserService;
 import com.yegetables.utils.MailTools;
 import com.yegetables.utils.PropertiesConfig;

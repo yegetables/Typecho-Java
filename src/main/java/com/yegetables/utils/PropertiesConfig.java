@@ -14,13 +14,13 @@ public class PropertiesConfig {
     static int passwordMaxLength;
     static int passwordMinLength;
     static int authCodeLength;
-    static String emailRegex;
+    static String emailRegex = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
 
     public static String getEmailRegex() {
         return emailRegex;
     }
 
-    @Value("${user.Email.RegExp.regexp}")
+    //    @Value("${user.Email.RegExp.regexp}")
     public void setEmailRegex(String emailRegex) {
         StringTools.emailRegex = emailRegex;
     }

@@ -1,8 +1,8 @@
 package com.yegetables.controller;
 
 import com.yegetables.pojo.User;
-import com.yegetables.service.ApiResult;
-import com.yegetables.service.ApiResultStatus;
+import com.yegetables.controller.dto.ApiResult;
+import com.yegetables.controller.dto.ApiResultStatus;
 import com.yegetables.utils.JsonTools;
 import com.yegetables.utils.PropertiesConfig;
 import com.yegetables.utils.StringTools;
@@ -18,7 +18,6 @@ import java.util.Map;
 @Controller
 @RequestMapping("/user")
 public class UserController extends BaseController {
-
 
     /**
      * 直接发送邮件验证码
