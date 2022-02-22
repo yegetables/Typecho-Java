@@ -8,10 +8,9 @@ import com.yegetables.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -46,7 +45,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     @Override
     public ApiResult<User> register(String username, String password, String mail, String code) {
-        Object value = redisTemplate.opsForValue().get(getEmailKey(mail));
+        String key = getEmailKey(mail);
+        Object value = redisTemplate.opsForValue().get(key);
         if (value == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("请先发送验证码");
         if (!StringUtils.equalsIgnoreCase(String.valueOf(value), code))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("验证码错误,请重试");
@@ -54,8 +54,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             return new ApiResult<User>().code(ApiResultStatus.Error).message("该用户名已经注册");
         if (getUser(new User().mail(mail)) != null)
             return new ApiResult<User>().code(ApiResultStatus.Error).message("该邮箱已经注册");
- 
-        User newUser = new User().mail(mail).name(username).password(phpass.HashPassword(password)).created(TimeTools.NowTime()).activated(TimeTools.NowTime());
+
+        User newUser = new User().mail(mail).name(username).password(phpass.HashPassword(password)).created(TimeTools.NowTime()).activated(TimeTools.NowTime()).logged(TimeTools.NowTime());
         try
         {
             Integer sum = userMapper.addUser(newUser);
@@ -73,13 +73,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             newUser.authCode(token);//只返回前端,不写入数据库表,存在redis中仅供本系统使用
 
 
-                try
-                 {
-                    redisTemplate.delete(key);
-               } catch (Exception e)
-                  {
-            log.error("redis delete failed" + key);
-                }
+            try
+            {
+                redisTemplate.delete(key);
+            } catch (Exception e)
+            {
+                log.error("redis delete failed" + key);
+            }
 
 
             return new ApiResult<User>().code(ApiResultStatus.Success).message("注册成功").data(removeSecrets(newUser));
@@ -156,8 +156,36 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return userMapper.getUser(user);
     }
 
+    //可能过期
+    @Override
+    public User cookieTokenToUser(String cookie, Model model) {
+        if (cookie != null)
+        {
+            Object obj = model.getAttribute(cookie);
+            if (obj != null)
+            {
+                String token = String.valueOf(obj);
+                try
+                {
+                    User user = (User) redisTemplate.opsForValue().get(token);
+                    if (user != null) return user;
+                    else log.warn("token 过期");
+                } catch (Exception e)
+                {
+                    log.error("redis get failed" + token);
+                }
+            }
+        }
+        return null;
+    }
+
     private User removeSecrets(User user) {
         user.password(null);
+        user.created(null);
+        user.activated(null);
+        user.logged(null);
+        user.uid(null);
+        user.authCode(null);
         return user;
     }
 
@@ -166,8 +194,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
         return token;
     }
+
     private String getEmailKey(String email) {
-        String token = PropertiesConfig.getApplicationName() + ":user:" + user.uid() + ":" + user.name();
+        String token = PropertiesConfig.getApplicationName() + ":sendEmail:" + email;
         token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
         return token;
     }

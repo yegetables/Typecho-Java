@@ -14,18 +14,19 @@ public class PropertiesConfig {
     static int passwordMaxLength;
     static int passwordMinLength;
     static int authCodeLength;
+    static String ApplicationName;
+    static String emailRegex = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
 
     public static String getApplicationName() {
         return ApplicationName;
     }
 
     @Value("${application.name}")
-    public static void setApplicationName(String applicationName) {
+    public PropertiesConfig setApplicationName(String applicationName) {
         ApplicationName = applicationName;
+        return this;
     }
 
-    static String ApplicationName;
-    static String emailRegex = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
 
     public static String getEmailRegex() {
         return emailRegex;
@@ -33,8 +34,10 @@ public class PropertiesConfig {
 
 
     //    @Value("${user.Email.RegExp.regexp}")
-    public void setEmailRegex(String emailRegex) {
+    public PropertiesConfig setEmailRegex(String emailRegex) {
         StringTools.emailRegex = emailRegex;
+        return this;
+
     }
 
     public static int getNameMaxLength() {

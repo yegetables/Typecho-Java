@@ -2,6 +2,7 @@ package com.yegetables.service;
 
 import com.yegetables.controller.dto.ApiResult;
 import com.yegetables.pojo.User;
+import org.springframework.ui.Model;
 
 public interface UserService {
 
@@ -14,5 +15,7 @@ public interface UserService {
     ApiResult<User> changeUserInfo(User user);
 
     User getUser(User user);
+
+    User cookieTokenToUser(String cookie, Model model);
 
 }

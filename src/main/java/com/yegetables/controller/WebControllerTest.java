@@ -61,6 +61,7 @@ public class WebControllerTest extends BaseController {
         log.warn("max=" + PropertiesConfig.getNameMaxLength());
         //        log.warn("email=" + PropertiesConfig.getEmailRegex());
         log.warn("authCodeLength=" + PropertiesConfig.getAuthCodeLength());
+        log.warn("application=" + PropertiesConfig.getApplicationName());
         return "";
     }
 

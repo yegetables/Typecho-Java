@@ -1,22 +1,22 @@
 package com.yegetables.controller;
 
-import com.yegetables.pojo.User;
+
 import com.yegetables.controller.dto.ApiResult;
 import com.yegetables.controller.dto.ApiResultStatus;
+import com.yegetables.pojo.User;
 import com.yegetables.utils.JsonTools;
 import com.yegetables.utils.PropertiesConfig;
 import com.yegetables.utils.StringTools;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
+@SessionAttributes("token")
 public class UserController extends BaseController {
 
     /**
@@ -31,7 +31,7 @@ public class UserController extends BaseController {
     public String sendEmail(@RequestBody String email) throws MailException {
         if (JsonTools.isJson(email)) email = StringTools.mapGetStringKey("email", jsonTools.JsonToMap(email));
         if (!StringTools.isEmail(email))
-            return new ApiResult<String>().code(ApiResultStatus.Error).message("email格式不正确[" + email + "]").toString();
+            return new ApiResult<String>().code(ApiResultStatus.Error).message("email不正确[" + email + "]").toString();
         return userService.sendEmailAuthorCode(email).toString();
     }
 
@@ -43,14 +43,22 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public String registeredAccount(@RequestBody Map<String, String> map) {
+    public String registeredAccount(@RequestBody Map<String, String> map, HttpSession session) {
         String email = StringTools.mapGetStringKey("email", map);
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
         String code = StringTools.mapGetStringKey("code", map);
         if (!StringTools.isGoodUser(username, password, email, code))
-            return new ApiResult<User>().code(ApiResultStatus.Error).message("注册信息不正确[" + map + "]").toString();
-        return userService.register(username, password, email, code).toString();
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("注册信息填写不正确[" + map + "]").toString();
+
+
+        ApiResult<User> result = userService.register(username, password, email, code);
+        if (result.getCode() == ApiResultStatus.Success)
+        {
+            session.setAttribute("token", result.getData().authCode());
+        }
+        return result.toString();
+
     }
 
     /**
@@ -61,12 +69,17 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public String LoginAccount(@RequestBody Map<String, String> map) {
+    public String LoginAccount(@RequestBody Map<String, String> map, HttpSession session) {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
         if (!StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()) || !StringTools.isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("登录信息不正确[" + map + "]").toString();
-        return userService.login(username, password).toString();
+        ApiResult<User> result = userService.login(username, password);
+        if (result.getCode() == ApiResultStatus.Success)
+        {
+            session.setAttribute("token", result.getData().authCode());
+        }
+        return result.toString();
     }
 
 
@@ -78,7 +91,7 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "/changeUserInfo", method = RequestMethod.POST)
     @ResponseBody
-    public String changeUserInfo(@RequestBody Map map) {
+    public String changeUserInfo(@RequestBody Map map, @CookieValue(value = "token", required = false) String token) {
         if (!map.containsKey("uid"))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不能为空").toString();
         Long uid = StringTools.mapGetLongKey("uid", map);
