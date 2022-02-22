@@ -28,6 +28,6 @@ public class BaseServiceImpl {
     @Autowired
     protected CommentMapper commentMapper;
     @Autowired
-    protected RedisTemplate redisTemplate;
+    protected RedisTemplate<String,Object> redisTemplate;
 
 }

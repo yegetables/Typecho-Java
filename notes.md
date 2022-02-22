@@ -36,3 +36,8 @@ relationship的mapper.xml里面是 没有用懒加载 其他的纪念开启了�
 https://xz.aliyun.com/t/7027
 
 所以在基础上又手动写了get/set方法帮助序列化进行
+
+
+
+
+用户登陆唯一token PropertiesConfig.getApplicationName() + ":user:" + newUser.uid()

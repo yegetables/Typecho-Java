@@ -57,7 +57,7 @@ public class User implements Serializable {
      */
     private String group = "visitor";
     /**
-     * 用户登录验证码
+     * 用户登录验证码,相当于token
      */
     private String authCode;
 

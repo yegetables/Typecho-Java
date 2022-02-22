@@ -14,11 +14,23 @@ public class PropertiesConfig {
     static int passwordMaxLength;
     static int passwordMinLength;
     static int authCodeLength;
+
+    public static String getApplicationName() {
+        return ApplicationName;
+    }
+
+    @Value("${application.name}")
+    public static void setApplicationName(String applicationName) {
+        ApplicationName = applicationName;
+    }
+
+    static String ApplicationName;
     static String emailRegex = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
 
     public static String getEmailRegex() {
         return emailRegex;
     }
+
 
     //    @Value("${user.Email.RegExp.regexp}")
     public void setEmailRegex(String emailRegex) {
