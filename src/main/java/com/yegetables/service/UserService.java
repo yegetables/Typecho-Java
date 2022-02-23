@@ -17,4 +17,5 @@ public interface UserService {
 
     ApiResult<User> getUserByToken(String token);
 
+    ApiResult<User> findPassword(String email, String password, String code);
 }

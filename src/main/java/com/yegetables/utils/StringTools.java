@@ -89,4 +89,10 @@ public class StringTools {
             return 0L;
         }
     }
+
+    public static boolean isGroupName(String newGroup) {
+        newGroup = toOkString(newGroup);
+        if ("administrator".equals(newGroup) || "visitor".equals(newGroup)) return true;
+        return false;
+    }
 }

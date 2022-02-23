@@ -8,6 +8,7 @@ import com.yegetables.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -23,8 +24,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     @Override
     public ApiResult<String> sendEmailAuthorCode(String email) {
-        if (getUser(new User().mail(email)) != null)
-            return new ApiResult<String>().code(ApiResultStatus.Error).message("该邮箱已经注册");
+        //        if (getUser(new User().mail(email)) != null)
+        //            return new ApiResult<String>().code(ApiResultStatus.Error).message("该邮箱已经注册");
         String text = RandomTools.getRandomAuthorCode(PropertiesConfig.getAuthCodeLength());
         String key = getEmailKey(email);
         //key --- rightcode  存入redis ,5分钟有效
@@ -43,6 +44,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ApiResult<User> register(String username, String password, String mail, String code) {
         String key = getEmailKey(mail);
         Object value = redisTemplate.opsForValue().get(key);
@@ -92,6 +94,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ApiResult<User> login(String username, String password) {
         User user = userMapper.getUserByName(username);
         if (user == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名不存在");
@@ -123,12 +126,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         //查重
         try
         {
-
             User oldUser = userMapper.getUserById(user.uid());
             if (oldUser == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户不存在");
-            if (user.name() != null && userMapper.getUserByName(user.name()) != null)
+            if (user.name() != null && !oldUser.name().equals(user.name()) && userMapper.getUserByName(user.name()) != null)
                 return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名已存在");
-            if (user.mail() != null && userMapper.getUserByMail(user.mail()) != null)
+            if (user.mail() != null && !oldUser.mail().equals(user.mail()) && userMapper.getUserByMail(user.mail()) != null)
                 return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱已存在");
         } catch (Exception e)
         {
@@ -141,7 +143,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             Integer sum = userMapper.updateUser(user);
             if (sum != 1) throw new Exception("更新用户信息失败");
             User newUser = userMapper.getUserById(user.uid());
-            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(newUser);
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(removeSecrets(newUser).authCode(null));
         } catch (Exception e)
         {
             String errorMessage = "更新用户信息失败";
@@ -164,7 +166,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             if (user != null) return new ApiResult<User>().code(ApiResultStatus.Success).message("获取成功").data(user);
             else
             {
-                String message = "token 无数据,已过期";
+                String message = "token 已过期,请重新登录";
                 log.warn(message);
                 return new ApiResult<User>().code(ApiResultStatus.Error).message("message");
             }
@@ -173,6 +175,38 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             log.error("redis get failed" + token);
         }
         return new ApiResult<User>().code(ApiResultStatus.Error).message("从redis获取失败,请重新登录");
+    }
+
+    @Override
+    @Transactional
+    public ApiResult<User> findPassword(String email, String password, String code) {
+        String key = getEmailKey(email);
+        Object value = redisTemplate.opsForValue().get(key);
+        if (value == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("请先发送验证码");
+        if (!StringUtils.equalsIgnoreCase(String.valueOf(value), code))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("验证码错误,请重试");
+        try
+        {
+            redisTemplate.delete(key);
+        } catch (Exception e)
+        {
+            log.error("redis delete failed" + key);
+        }
+
+        User user = getUser(new User().mail(email));
+        user.password(phpass.HashPassword(password));
+        try
+        {
+            Integer sum = userMapper.updateUser(user);
+            if (sum != 1) throw new Exception("更新用户信息失败");
+            User newUser = userMapper.getUserById(user.uid());
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(removeSecrets(newUser).authCode(null));
+        } catch (Exception e)
+        {
+            String errorMessage = "更新用户信息失败";
+            log.error(errorMessage, e);
+            return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage);
+        }
     }
 
     private User removeSecrets(User user) {

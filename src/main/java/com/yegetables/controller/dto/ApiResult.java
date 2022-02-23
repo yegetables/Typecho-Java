@@ -19,9 +19,8 @@ public class ApiResult<T> implements Serializable {
     public String toString() {
         try
         {
-            // if (data != null)
-                // log.warn(data.toString());
-                           data.toString();
+            // log.warn(data.toString());
+            if (data != null) data.toString();
             return JSON.toJSONString(this);
         } catch (Exception e)
         {

@@ -9,7 +9,6 @@ import com.yegetables.utils.PropertiesConfig;
 import com.yegetables.utils.StringTools;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -39,12 +38,11 @@ public class UserController extends BaseController {
     /**
      * 用户注册
      *
-     * @param map 包含用户名，密码，邮箱，验证码
+     * @param map 包含username,password,email,code验证码
      * @return ApiResult的json串
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
     public String registeredAccount(@RequestBody Map<String, String> map, HttpSession session) {
         String email = StringTools.mapGetStringKey("email", map);
         String password = StringTools.mapGetStringKey("password", map);
@@ -62,12 +60,11 @@ public class UserController extends BaseController {
     /**
      * 用户登录
      *
-     * @param map 包含用户名，密码
+     * @param map 包含username,password
      * @return ApiResult的json串
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
     public String LoginAccount(@RequestBody Map<String, String> map, HttpSession session) {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
@@ -82,27 +79,31 @@ public class UserController extends BaseController {
     /**
      * 用户信息修改
      *
-     * @param map 必须有(uid),可选(username，password，url,screenName)暂不支持(email,group)
+     * @param map 可选(username，password,url,screenName,email)
      * @return ApiResult的json串
      */
     @RequestMapping(value = "/changeUserInfo", method = RequestMethod.POST)
     @ResponseBody
-    @Transactional
-    public String changeUserInfo(@RequestBody Map map, @SessionAttribute(name = "token", required = false) String token) {
+    public String changeUserInfo(@RequestBody Map<String, String> map, @SessionAttribute(name = "token", required = false) String token) {
         var userResult = userService.getUserByToken(token);
-        if (userResult.getCode() != ApiResultStatus.Success) return userResult.toString();
+        if (userResult.getCode() != ApiResultStatus.Success || userResult.data() == null) return userResult.toString();
         User user = userResult.getData();
+
         if (map.containsKey("username"))
         {
             String newUserName = StringTools.mapGetStringKey("username", map);
             if (StringTools.isInLength(newUserName, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
                 user.name(newUserName);
+            else
+                return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名不正确[" + newUserName + "]").toString();
         }
         if (map.containsKey("password"))
         {
             String newPassword = StringTools.mapGetStringKey("password", map);
             if (StringTools.isInLength(newPassword, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
                 user.password(newPassword);
+            else
+                return new ApiResult<User>().code(ApiResultStatus.Error).message("密码不正确[" + newPassword + "]").toString();
         }
         if (map.containsKey("url"))
         {
@@ -114,25 +115,43 @@ public class UserController extends BaseController {
             String newScreenName = StringTools.mapGetStringKey("screenName", map);
             user.screenName(newScreenName);
         }
-        //暂不支持TODO(支持邮箱更改,用户组更改)
-        //        if (map.containsKey("email"))
-        //        {
-        //            String newEmail = StringTools.mapGetStringKey("email", map);
-        //            if (StringTools.isEmail(newEmail))
-        //            {
-        //                // TODO:邮箱是否已经被注册,＋验证码
-        //                // user.email(newEmail);
-        //            }
-        //        }
         //        if (map.containsKey("group"))
         //        {
         //            String newGroup = StringTools.mapGetStringKey("group", map);
-        //            //            user.group(newGroup);
+        //            if (StringTools.isGroupName(newGroup)){
+        //                user.group(newGroup);
+        //            }
+        //            else
+        //            {
+        //                return new ApiResult<User>().code(ApiResultStatus.Error).message("用户组不正确[" + newGroup + "]").toString();
+        //            }
         //        }
+
+        //暂不支持TODO(支持邮箱更改,用户组更改)
+        if (map.containsKey("email"))
+        {
+            String newEmail = StringTools.mapGetStringKey("email", map);
+            if (StringTools.isEmail(newEmail))
+            {
+
+                user.mail(newEmail);
+            }
+            else
+            {
+                return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱不正确[" + newEmail + "]").toString();
+            }
+        }
+
         return userService.changeUserInfo(user).toString();
     }
 
 
+    /**
+     * 用户信息查询
+     *
+     * @param token
+     * @return
+     */
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
     @ResponseBody
     public String getUserInfo(@SessionAttribute(name = "token", required = false) String token) {
@@ -152,4 +171,25 @@ public class UserController extends BaseController {
             result.getData().authCode(null);
         }
     }
+
+
+    /**
+     * 用户密码找回,先申请邮箱验证码
+     *
+     * @param map password,email,code 新密码和邮箱和验证码
+     * @return ApiResult的json串
+     */
+    @RequestMapping(value = "/findPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public String findPassword(@RequestBody Map<String, String> map) {
+        String email = StringTools.mapGetStringKey("email", map);
+        String password = StringTools.mapGetStringKey("password", map);
+        String code = StringTools.mapGetStringKey("code", map);
+        if (!StringTools.isGoodUser("admin", password, email, code))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("信息填写不正确[" + map + "]").toString();
+        ApiResult<User> result = userService.findPassword(email, password, code);
+        return result.toString();
+    }
+
+
 }
