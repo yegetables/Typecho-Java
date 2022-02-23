@@ -8,6 +8,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.Map;
 
 @Controller
@@ -90,5 +93,18 @@ public class WebControllerTest extends BaseController {
         return "";
     }
 
+    @RequestMapping(value = "/token")
+    @ResponseBody
+    public String token1(@SessionAttribute(name = "token", required = false) String token, HttpSession session, HttpServletRequest request) {
+        //        User user = userService.cookieTokenToUser(session);
+        //        log.warn(user.toString());
+        log.warn("token=" + token);
+        if (token == null)
+        {
+            log.warn("session=" + session.getAttribute("token"));
+            log.warn("request=" + Arrays.toString(request.getCookies()));
+        }
+        return "";
+    }
 
 }

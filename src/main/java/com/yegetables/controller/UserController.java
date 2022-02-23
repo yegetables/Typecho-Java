@@ -9,6 +9,7 @@ import com.yegetables.utils.PropertiesConfig;
 import com.yegetables.utils.StringTools;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -43,6 +44,7 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public String registeredAccount(@RequestBody Map<String, String> map, HttpSession session) {
         String email = StringTools.mapGetStringKey("email", map);
         String password = StringTools.mapGetStringKey("password", map);
@@ -51,12 +53,8 @@ public class UserController extends BaseController {
         if (!StringTools.isGoodUser(username, password, email, code))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("注册信息填写不正确[" + map + "]").toString();
 
-
         ApiResult<User> result = userService.register(username, password, email, code);
-        if (result.getCode() == ApiResultStatus.Success)
-        {
-            session.setAttribute("token", result.getData().authCode());
-        }
+        setToken(result, session);
         return result.toString();
 
     }
@@ -69,16 +67,14 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public String LoginAccount(@RequestBody Map<String, String> map, HttpSession session) {
         String password = StringTools.mapGetStringKey("password", map);
         String username = StringTools.mapGetStringKey("username", map);
         if (!StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()) || !StringTools.isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("登录信息不正确[" + map + "]").toString();
         ApiResult<User> result = userService.login(username, password);
-        if (result.getCode() == ApiResultStatus.Success)
-        {
-            session.setAttribute("token", result.getData().authCode());
-        }
+        setToken(result, session);
         return result.toString();
     }
 
@@ -91,13 +87,11 @@ public class UserController extends BaseController {
      */
     @RequestMapping(value = "/changeUserInfo", method = RequestMethod.POST)
     @ResponseBody
-    public String changeUserInfo(@RequestBody Map map, @CookieValue(value = "token", required = false) String token) {
-        if (!map.containsKey("uid"))
-            return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不能为空").toString();
-        Long uid = StringTools.mapGetLongKey("uid", map);
-        if (uid <= 0)
-            return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不正确[" + map + "]").toString();
-        User user = new User().uid(uid);
+    @Transactional
+    public String changeUserInfo(@RequestBody Map map, @SessionAttribute(name = "token", required = false) String token) {
+        var userResult = userService.getUserByToken(token);
+        if (userResult.getCode() != ApiResultStatus.Success) return userResult.toString();
+        User user = userResult.getData();
         if (map.containsKey("username"))
         {
             String newUserName = StringTools.mapGetStringKey("username", map);
@@ -141,37 +135,21 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
     @ResponseBody
-    public String getUserInfo(@RequestBody Map map) {
-        if (map.containsKey("username"))
+    public String getUserInfo(@SessionAttribute(name = "token", required = false) String token) {
+        var userResult = userService.getUserByToken(token);
+        if (userResult.getCode() != ApiResultStatus.Success) return userResult.toString();
+        User user = userResult.getData();
+        user.authCode(null);
+        user.password(null);
+        return new ApiResult<User>().code(ApiResultStatus.Success).data(user).toString();
+    }
+
+    private void setToken(ApiResult<User> result, HttpSession session) {
+        if (result.getCode() == ApiResultStatus.Success && result.getData() != null)
         {
-            String username = StringTools.mapGetStringKey("username", map);
-            if (StringTools.isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
-            {
-                User user = userService.getUser(new User().name(username));
-                return new ApiResult<User>().message("获取用户信息成功").data(user).toString();
-            }
-            else return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名不正确[" + map + "]").toString();
+            // key:"token" value:redis 的随机字符串
+            session.setAttribute("token", result.getData().authCode());
+            result.getData().authCode(null);
         }
-        if (map.containsKey("uid"))
-        {
-            Long uid = StringTools.mapGetLongKey("uid", map);
-            if (uid > 0)
-            {
-                User user = userService.getUser(new User().uid(uid));
-                return new ApiResult<User>().message("获取用户信息成功").data(user).toString();
-            }
-            else return new ApiResult<User>().code(ApiResultStatus.Error).message("uid不正确[" + map + "]").toString();
-        }
-        if (map.containsKey("email"))
-        {
-            String email = StringTools.mapGetStringKey("email", map);
-            if (StringTools.isEmail(email))
-            {
-                User user = userService.getUser(new User().mail(email));
-                return new ApiResult<User>().message("获取用户信息成功").data(user).toString();
-            }
-            else return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱不正确[" + map + "]").toString();
-        }
-        return new ApiResult<User>().code(ApiResultStatus.Error).message("参数不正确[" + map + "]" + ",需要uid,username,email任意一个").toString();
     }
 }

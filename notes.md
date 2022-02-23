@@ -41,3 +41,7 @@ https://xz.aliyun.com/t/7027
 
 
 用户登陆唯一token PropertiesConfig.getApplicationName() + ":user:" + newUser.uid()
+
+![img](https://pic2.zhimg.com/v2-5a762dbe52ff1993221169c12dcb705f_r.jpg?source=1940ef5c)
+
+https://www.zhihu.com/question/19786827

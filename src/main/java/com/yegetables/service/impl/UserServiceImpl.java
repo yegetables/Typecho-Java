@@ -8,7 +8,6 @@ import com.yegetables.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.util.DigestUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -157,26 +156,23 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     //可能过期
-    @Override
-    public User cookieTokenToUser(String cookie, Model model) {
-        if (cookie != null)
+    public ApiResult<User> getUserByToken(String token) {
+        if (token == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("token不能为空");
+        try
         {
-            Object obj = model.getAttribute(cookie);
-            if (obj != null)
+            User user = (User) redisTemplate.opsForValue().get(token);
+            if (user != null) return new ApiResult<User>().code(ApiResultStatus.Success).message("获取成功").data(user);
+            else
             {
-                String token = String.valueOf(obj);
-                try
-                {
-                    User user = (User) redisTemplate.opsForValue().get(token);
-                    if (user != null) return user;
-                    else log.warn("token 过期");
-                } catch (Exception e)
-                {
-                    log.error("redis get failed" + token);
-                }
+                String message = "token 无数据,已过期";
+                log.warn(message);
+                return new ApiResult<User>().code(ApiResultStatus.Error).message("message");
             }
+        } catch (Exception e)
+        {
+            log.error("redis get failed" + token);
         }
-        return null;
+        return new ApiResult<User>().code(ApiResultStatus.Error).message("从redis获取失败,请重新登录");
     }
 
     private User removeSecrets(User user) {
@@ -185,7 +181,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         user.activated(null);
         user.logged(null);
         user.uid(null);
-        user.authCode(null);
+        //        user .authCode(null);
+        // token不存在redis中, 在user中.  返回时只移除私密数据,不移除token.
+        //由controller层自行移除和设置token
         return user;
     }
 
