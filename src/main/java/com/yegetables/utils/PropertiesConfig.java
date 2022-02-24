@@ -35,7 +35,7 @@ public class PropertiesConfig {
 
     //    @Value("${user.Email.RegExp.regexp}")
     public PropertiesConfig setEmailRegex(String emailRegex) {
-        StringTools.emailRegex = emailRegex;
+        emailRegex = emailRegex;
         return this;
 
     }
