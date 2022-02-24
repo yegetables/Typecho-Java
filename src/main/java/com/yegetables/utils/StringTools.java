@@ -1,6 +1,7 @@
 package com.yegetables.utils;
 
 import com.yegetables.pojo.ContentStatus;
+import com.yegetables.pojo.ContentType;
 import com.yegetables.pojo.MetaType;
 import com.yegetables.pojo.UserGroup;
 import lombok.extern.log4j.Log4j2;
@@ -52,14 +53,17 @@ public class StringTools {
 
 
     public static class User {
-        public static boolean isGroupName(String newGroup) {
+        public static UserGroup getGroupName(String newGroup) {
             newGroup = toOkString(newGroup);
-            if (isInLength(newGroup, PropertiesConfig.User.getGroupNameMinLength(), PropertiesConfig.User.getGroupNameMaxLength()))
-                for (UserGroup group : UserGroup.values())
-                {
-                    if (group.name().equals(newGroup)) return true;
-                }
-            return false;
+            for (UserGroup group : UserGroup.values())
+            {
+                if (group.name().equals(newGroup)) return group;
+            }
+            return null;
+        }
+
+        public static boolean isGroupName(String newGroup) {
+            return getGroupName(newGroup) != null;
         }
 
         public static boolean isPassword(String password) {
@@ -118,20 +122,72 @@ public class StringTools {
 
     public static class Meta {
         public static boolean isType(String type) {
+            return getType(type) != null;
+        }
+
+        public static MetaType getType(String type) {
             type = toOkString(type);
-            if (isInLength(type, PropertiesConfig.User.getGroupNameMinLength(), PropertiesConfig.User.getGroupNameMaxLength()))
-                for (MetaType temp : MetaType.values())
-                {
-                    if (temp.name().equals(type)) return true;
-                }
+            for (MetaType temp : MetaType.values())
+            {
+                if (temp.name().equals(type)) return temp;
+            }
+            return null;
+        }
+
+        public static boolean isName(String name) {
+            name = toOkString(name);
+            if (isInLength(name, PropertiesConfig.Meta.getNameMinLength(), PropertiesConfig.Meta.getNameMaxLength()))
+                return true;
             return false;
         }
+
+        public static boolean isSlug(String slug) {
+            slug = toOkString(slug);
+            if (isInLength(slug, PropertiesConfig.Meta.getSlugMinLength(), PropertiesConfig.Meta.getSlugMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static boolean isDescription(String description) {
+            description = toOkString(description);
+            if (isInLength(description, PropertiesConfig.Meta.getDescriptionMinLength(), PropertiesConfig.Meta.getDescriptionMaxLength()))
+                return true;
+            return false;
+        }
+
 
     }
 
     public static class Content {
+        public static boolean isTitle(String title) {
+            title = toOkString(title);
+            if (isInLength(title, PropertiesConfig.Content.getTitleMinLength(), PropertiesConfig.Content.getTitleMaxLength()))
+                return true;
+            return false;
+        }
 
-        public static ContentStatus valueOf(String value) {
+        public static boolean isSlug(String slug) {
+            slug = toOkString(slug);
+            if (isInLength(slug, PropertiesConfig.Content.getSlugMinLength(), PropertiesConfig.Content.getSlugMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static boolean isPassword(String password) {
+            password = toOkString(password);
+            if (isInLength(password, PropertiesConfig.Content.getPasswordMinLength(), PropertiesConfig.Content.getPasswordMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static boolean isTemplate(String template) {
+            template = toOkString(template);
+            if (isInLength(template, PropertiesConfig.Content.getTemplateMinLength(), PropertiesConfig.Content.getTemplateMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static ContentStatus getStatus(String value) {
             value = toOkString(value);
             for (ContentStatus temp : ContentStatus.values())
             {
@@ -139,6 +195,87 @@ public class StringTools {
             }
             return null;
         }
+
+        public static boolean isType(String type) {
+            return getType(type) != null;
+        }
+
+        public static ContentType getType(String type) {
+            type = toOkString(type);
+            for (ContentType temp : ContentType.values())
+            {
+                if (temp.name().equals(type)) return temp;
+            }
+            return null;
+        }
+
+        public static boolean isStatus(String status) {
+            return getStatus(status) != null;
+        }
+
     }
+
+    public static class Comment {
+
+        public static boolean isAuthorName(String authorName) {
+            authorName = toOkString(authorName);
+            if (isInLength(authorName, PropertiesConfig.Comment.getAuthorNameMinLength(), PropertiesConfig.Comment.getAuthorNameMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static boolean isEmail(String email) {
+            return User.isEmail(email);
+        }
+
+        public static boolean isIp(String ip) {
+            ip = toOkString(ip);
+            if (isInLength(ip, PropertiesConfig.Comment.getIpMinLength(), PropertiesConfig.Comment.getIpMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static boolean isAgent(String agent) {
+            agent = toOkString(agent);
+            if (isInLength(agent, PropertiesConfig.Comment.getAgentMinLength(), PropertiesConfig.Comment.getAgentMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static boolean isUrl(String url) {
+            url = toOkString(url);
+            if (isInLength(url, PropertiesConfig.Comment.getUrlMinLength(), PropertiesConfig.Comment.getUrlMaxLength()))
+                return true;
+            return false;
+        }
+
+        public static ContentType getType(String type) {
+            type = toOkString(type);
+            for (ContentType temp : ContentType.values())
+            {
+                if (temp.name().equals(type)) return temp;
+            }
+            return null;
+        }
+
+        public static boolean isType(String type) {
+            return getType(type) != null;
+        }
+
+        public static ContentStatus getStatus(String status) {
+            status = toOkString(status);
+            for (ContentStatus temp : ContentStatus.values())
+            {
+                if (temp.getValue().equals(status)) return temp;
+            }
+            return null;
+        }
+
+        public static boolean isStatus(String status) {
+            return getStatus(status) != null;
+        }
+
+    }
+
 
 }

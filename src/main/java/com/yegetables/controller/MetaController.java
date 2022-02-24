@@ -53,11 +53,10 @@ public class MetaController extends BaseController {
     @ResponseBody
     public String allType(@RequestBody String type) {
         type = StringTools.toOkString(type);
-        //        log.warn("type:" + type);
         if (JsonTools.isJson(type)) type = StringTools.mapGetStringKey("type", jsonTools.JsonToMap(type));
         if (!StringTools.Meta.isType(type))
             return new ApiResult<List<Meta>>().code(ApiResultStatus.Error).message("type错误").toString();
-        List<Meta> metas = metaService.allType(MetaType.valueOf(MetaType.class, type));
+        List<Meta> metas = metaService.allType(StringTools.Meta.getType(type));
         ApiResult<List<Meta>> result = new ApiResult<List<Meta>>().code(ApiResultStatus.Success).message("查询成功").data(metas);
         return result.toString();
     }

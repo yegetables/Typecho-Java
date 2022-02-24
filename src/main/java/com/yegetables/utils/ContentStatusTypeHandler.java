@@ -17,17 +17,17 @@ public class ContentStatusTypeHandler extends BaseTypeHandler<ContentStatus> {
 
     @Override
     public ContentStatus getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        return StringTools.Content.valueOf(rs.getString(columnName));
+        return StringTools.Content.getStatus(rs.getString(columnName));
     }
 
     @Override
     public ContentStatus getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        return StringTools.Content.valueOf(rs.getString(columnIndex));
+        return StringTools.Content.getStatus(rs.getString(columnIndex));
 
     }
 
     @Override
     public ContentStatus getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return StringTools.Content.valueOf(cs.getString(columnIndex));
+        return StringTools.Content.getStatus(cs.getString(columnIndex));
     }
 }

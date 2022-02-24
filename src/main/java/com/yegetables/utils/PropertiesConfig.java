@@ -144,6 +144,231 @@ public class PropertiesConfig {
         }
     }
 
+    public static class Meta {
+        static int nameMaxLength = 150;
+        static int nameMinLength = 0;
+        static int slugMaxLength = 150;
+        static int slugMinLength = -1;
+        static int descriptionMaxLength = 150;
+        static int descriptionMinLength = -1;
+
+
+        public static int getNameMaxLength() {
+            return nameMaxLength;
+        }
+
+        public void setNameMaxLength(int nameMaxLength) {
+            Meta.nameMaxLength = nameMaxLength;
+        }
+
+        public static int getNameMinLength() {
+            return nameMinLength;
+        }
+
+        public void setNameMinLength(int nameMinLength) {
+            Meta.nameMinLength = nameMinLength;
+        }
+
+        public static int getSlugMaxLength() {
+            return slugMaxLength;
+        }
+
+        public void setSlugMaxLength(int slugMaxLength) {
+            Meta.slugMaxLength = slugMaxLength;
+        }
+
+        public static int getSlugMinLength() {
+            return slugMinLength;
+        }
+
+        public void setSlugMinLength(int slugMinLength) {
+            Meta.slugMinLength = slugMinLength;
+        }
+
+        public static int getDescriptionMaxLength() {
+            return descriptionMaxLength;
+        }
+
+        public void setDescriptionMaxLength(int descriptionMaxLength) {
+            Meta.descriptionMaxLength = descriptionMaxLength;
+        }
+
+        public static int getDescriptionMinLength() {
+            return descriptionMinLength;
+        }
+
+        public void setDescriptionMinLength(int descriptionMinLength) {
+            Meta.descriptionMinLength = descriptionMinLength;
+        }
+    }
+
+    public static class Content {
+        static int titleMaxLength = 150;
+        static int titleMinLength = 0;
+        static int slugMaxLength = 150;
+        static int slugMinLength = -1;
+        static int passwordMaxLength = 32;
+        static int passwordMinLength = -1;
+        static int templateMaxLength = 32;
+        static int templateMinLength = -1;
+
+        public static int getTitleMaxLength() {
+            return titleMaxLength;
+        }
+
+        public void setTitleMaxLength(int titleMaxLength) {
+            Content.titleMaxLength = titleMaxLength;
+        }
+
+        public static int getTitleMinLength() {
+            return titleMinLength;
+        }
+
+        public void setTitleMinLength(int titleMinLength) {
+            Content.titleMinLength = titleMinLength;
+        }
+
+        public static int getSlugMaxLength() {
+            return slugMaxLength;
+        }
+
+        public void setSlugMaxLength(int slugMaxLength) {
+            Content.slugMaxLength = slugMaxLength;
+        }
+
+        public static int getSlugMinLength() {
+            return slugMinLength;
+        }
+
+        public void setSlugMinLength(int slugMinLength) {
+            Content.slugMinLength = slugMinLength;
+        }
+
+        public static int getPasswordMaxLength() {
+            return passwordMaxLength;
+        }
+
+        public void setPasswordMaxLength(int passwordMaxLength) {
+            Content.passwordMaxLength = passwordMaxLength;
+        }
+
+        public static int getPasswordMinLength() {
+            return passwordMinLength;
+        }
+
+        public void setPasswordMinLength(int passwordMinLength) {
+            Content.passwordMinLength = passwordMinLength;
+        }
+
+        public static int getTemplateMaxLength() {
+            return templateMaxLength;
+        }
+
+        public void setTemplateMaxLength(int templateMaxLength) {
+            Content.templateMaxLength = templateMaxLength;
+        }
+
+        public static int getTemplateMinLength() {
+            return templateMinLength;
+        }
+
+        public void setTemplateMinLength(int templateMinLength) {
+            Content.templateMinLength = templateMinLength;
+        }
+    }
+
+    public static class Comment {
+        static int authorNameMaxLength = 150;
+        static int authorNameMinLength = 0;
+        static int emailMaxLength = 150;
+        static int emailMinLength = 0;
+        static int urlMaxLength = 150;
+        static int urlMinLength = -1;
+        static int ipMaxLength = 64;
+        static int ipMinLength = -1;
+        static int agentMaxLength = 511;
+        static int agentMinLength = -1;
+
+        public static int getAuthorNameMaxLength() {
+            return authorNameMaxLength;
+        }
+
+        public void setAuthorNameMaxLength(int authorNameMaxLength) {
+            Comment.authorNameMaxLength = authorNameMaxLength;
+        }
+
+        public static int getAuthorNameMinLength() {
+            return authorNameMinLength;
+        }
+
+        public void setAuthorNameMinLength(int authorNameMinLength) {
+            Comment.authorNameMinLength = authorNameMinLength;
+        }
+
+        public static int getEmailMaxLength() {
+            return emailMaxLength;
+        }
+
+        public void setEmailMaxLength(int emailMaxLength) {
+            Comment.emailMaxLength = emailMaxLength;
+        }
+
+        public static int getEmailMinLength() {
+            return emailMinLength;
+        }
+
+        public void setEmailMinLength(int emailMinLength) {
+            Comment.emailMinLength = emailMinLength;
+        }
+
+        public static int getUrlMaxLength() {
+            return urlMaxLength;
+        }
+
+        public void setUrlMaxLength(int urlMaxLength) {
+            Comment.urlMaxLength = urlMaxLength;
+        }
+
+        public static int getUrlMinLength() {
+            return urlMinLength;
+        }
+
+        public void setUrlMinLength(int urlMinLength) {
+            Comment.urlMinLength = urlMinLength;
+        }
+
+        public static int getIpMaxLength() {
+            return ipMaxLength;
+        }
+
+        public void setIpMaxLength(int ipMaxLength) {
+            Comment.ipMaxLength = ipMaxLength;
+        }
+
+        public static int getIpMinLength() {
+            return ipMinLength;
+        }
+
+        public void setIpMinLength(int ipMinLength) {
+            Comment.ipMinLength = ipMinLength;
+        }
+
+        public static int getAgentMaxLength() {
+            return agentMaxLength;
+        }
+
+        public void setAgentMaxLength(int agentMaxLength) {
+            Comment.agentMaxLength = agentMaxLength;
+        }
+
+        public static int getAgentMinLength() {
+            return agentMinLength;
+        }
+
+        public void setAgentMinLength(int agentMinLength) {
+            Comment.agentMinLength = agentMinLength;
+        }
+    }
 
     static String ApplicationName;
     static String emailRegex = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
