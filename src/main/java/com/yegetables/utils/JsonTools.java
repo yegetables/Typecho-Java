@@ -48,8 +48,7 @@ public class JsonTools {
         }
         try
         {
-            Map map = JSON.parseObject(json, Map.class);
-            return map;
+            return JSON.parseObject(json, Map.class);
         } catch (Exception e)
         {
             log.error("json转换为map失败：" + json);

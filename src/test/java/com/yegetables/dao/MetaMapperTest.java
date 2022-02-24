@@ -1,6 +1,7 @@
 package com.yegetables.dao;
 
 import com.yegetables.pojo.Meta;
+import com.yegetables.pojo.MetaType;
 import com.yegetables.utils.BaseJunit5Test;
 import com.yegetables.utils.RandomTools;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class MetaMapperTest extends BaseJunit5Test {
 
     @Test
     void getMetasByType() {
-        var list = metaMapper.getMetasByType("category");
+        var list = metaMapper.getMetasByType(MetaType.category);
         list.forEach(System.out::println);
     }
 
@@ -38,7 +39,7 @@ class MetaMapperTest extends BaseJunit5Test {
         meta.slug(RandomTools.getRandomName());
         meta.description(RandomTools.getRandomText(10));
         meta.parent(RandomTools.getRandom(metaMapper.getAllMetas()));
-        meta.type("test");
+        meta.type(MetaType.test);
         assertEquals(1, metaMapper.addMeta(meta));
         return meta;
     }
@@ -55,6 +56,7 @@ class MetaMapperTest extends BaseJunit5Test {
     void updateMeta() {
         var newMeta = createMeta();
         newMeta.name(RandomTools.getRandomName());
+        newMeta.type(MetaType.tag);
         assertEquals(1, metaMapper.updateMeta(newMeta));
         var updateMeta = metaMapper.getMeta(newMeta.mid());
         //        updateMeta.toString();

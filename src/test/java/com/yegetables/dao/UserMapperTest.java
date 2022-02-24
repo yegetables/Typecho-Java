@@ -1,6 +1,7 @@
 package com.yegetables.dao;
 
 import com.yegetables.pojo.User;
+import com.yegetables.pojo.UserGroup;
 import com.yegetables.utils.BaseJunit5Test;
 import com.yegetables.utils.RandomTools;
 import com.yegetables.utils.TimeTools;
@@ -49,6 +50,7 @@ class UserMapperTest extends BaseJunit5Test {
         user.mail(RandomTools.getRandomEmail());
         user.url(RandomTools.getRandomUrl());
         user.created(TimeTools.NowTime());
+        user.group(UserGroup.visitor);
         assertEquals(1, userMapper.addUser(user));
         return user;
     }
@@ -58,7 +60,7 @@ class UserMapperTest extends BaseJunit5Test {
         var user = createUser();
         var newUser = userMapper.getUserByName(user.name());
         //        newUser.toString();
-       assertEquals(user, newUser);
+        assertEquals(user, newUser);
     }
 
     @Test
@@ -90,10 +92,11 @@ class UserMapperTest extends BaseJunit5Test {
         var old = createUser();
         old.name(RandomTools.getRandomName());
         old.url(RandomTools.getRandomUrl());
+        old.group(UserGroup.administrator);
         assertEquals(1, userMapper.updateUser(old));
         var lastUpdate = userMapper.getUserById(old.uid());
         //        lastUpdate.toString();
-       assertEquals(old, lastUpdate);
+        assertEquals(old, lastUpdate);
         assertEquals(1, userMapper.deleteUser(lastUpdate));
         assertNull(userMapper.getUserById(lastUpdate.uid()));
     }

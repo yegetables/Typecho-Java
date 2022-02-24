@@ -1,6 +1,8 @@
 package com.yegetables.dao;
 
 import com.yegetables.pojo.Content;
+import com.yegetables.pojo.ContentStatus;
+import com.yegetables.pojo.ContentType;
 import com.yegetables.utils.BaseJunit5Test;
 import com.yegetables.utils.RandomTools;
 import com.yegetables.utils.TimeTools;
@@ -29,25 +31,27 @@ class ContentMapperTest extends BaseJunit5Test {
 
     @Test
     void getContent() {
-        var content = contentMapper.getContent(2L);
+        var content = contentMapper.getContent(RandomTools.getRandom(contentMapper.getAllContents()).cid());
         System.out.println(content);
     }
 
     @Test
     void getContentsByAuthorId() {
-        var content = contentMapper.getContentsByAuthorId(1L);
+        var t = RandomTools.getRandom(contentMapper.getAllContents());
+        t.toString();
+        var content = contentMapper.getContentsByAuthorId(t.author().getUid());
         System.out.println(content);
     }
 
     @Test
     void getContentsByType() {
-        var content = contentMapper.getContentsByType("page");
+        var content = contentMapper.getContentsByType(ContentType.post);
         System.out.println(content);
     }
 
     @Test
     void getContentsByStatus() {
-        var content = contentMapper.getContentsByStatus("publish");
+        var content = contentMapper.getContentsByStatus(ContentStatus.PRIVATE);
         System.out.println(content);
     }
 
@@ -59,6 +63,7 @@ class ContentMapperTest extends BaseJunit5Test {
         content.modified(content.created());
         content.author(RandomTools.getRandom(userMapper.getAllUsers()));
         content.parent(RandomTools.getRandom(contentMapper.getAllContents()));
+        content.status(ContentStatus.PRIVATE);
         assertEquals(1, contentMapper.addContent(content));
         return content;
     }
@@ -76,6 +81,7 @@ class ContentMapperTest extends BaseJunit5Test {
     void updateContent() {
         Content content = createContent();
         content.text(RandomTools.getRandomText(8));
+        content.status(ContentStatus.publish);
         assertEquals(1, contentMapper.updateContent(content));
         var newContent = contentMapper.getContent(content.cid());
         //        newContent.toString();

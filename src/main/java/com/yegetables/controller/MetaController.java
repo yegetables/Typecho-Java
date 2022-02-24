@@ -3,6 +3,7 @@ package com.yegetables.controller;
 import com.yegetables.controller.dto.ApiResult;
 import com.yegetables.controller.dto.ApiResultStatus;
 import com.yegetables.pojo.Meta;
+import com.yegetables.pojo.MetaType;
 import com.yegetables.utils.JsonTools;
 import com.yegetables.utils.StringTools;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class MetaController extends BaseController {
     @RequestMapping("/allCategory")
     @ResponseBody
     public String allCategory() {
-        return allType("category");
+        return allType(MetaType.category.toString());
     }
 
     /**
@@ -38,7 +39,7 @@ public class MetaController extends BaseController {
     @ResponseBody
     public String allTag() {
         //        return allType("{\"type\":\"tag\"}");
-        return allType("tag");
+        return allType(MetaType.tag.toString());
     }
 
 
@@ -51,12 +52,12 @@ public class MetaController extends BaseController {
     @RequestMapping("/allType")
     @ResponseBody
     public String allType(@RequestBody String type) {
+        type = StringTools.toOkString(type);
         //        log.warn("type:" + type);
         if (JsonTools.isJson(type)) type = StringTools.mapGetStringKey("type", jsonTools.JsonToMap(type));
-
-        type = StringTools.toOkString(type);
-        if (type.equals("")) return new ApiResult<List<Meta>>().code(ApiResultStatus.Error).message("参数错误").toString();
-        List<Meta> metas = metaService.allType(type);
+        if (!StringTools.Meta.isType(type))
+            return new ApiResult<List<Meta>>().code(ApiResultStatus.Error).message("type错误").toString();
+        List<Meta> metas = metaService.allType(MetaType.valueOf(MetaType.class, type));
         ApiResult<List<Meta>> result = new ApiResult<List<Meta>>().code(ApiResultStatus.Success).message("查询成功").data(metas);
         return result.toString();
     }

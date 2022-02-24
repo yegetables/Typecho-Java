@@ -14,7 +14,7 @@
 
         <result property="template" column="template"/>
         <result property="type" column="type"/>
-        <result property="status" column="status"/>
+        <result property="status" column="status" typeHandler="com.yegetables.utils.ContentStatusTypeHandler"/>
         <result property="password" column="password"/>
         <result property="commentsNum" column="commentsNum"/>
         <result property="allowComment" column="allowComment"/>
@@ -26,8 +26,8 @@
                      fetchType="lazy" select="com.yegetables.dao.UserMapper.getUserByAuthor"
         />
         <!--                     resultMap="com.yegetables.dao.UserMapper.usersResultMap"-->
-        
-        <association property="parent" column="parent"  fetchType="lazy"  select="getContentByParent" javaType="content"/>
+
+        <association property="parent" column="parent" fetchType="lazy" select="getContentByParent" javaType="content"/>
     </resultMap>
     <sql id="pojoName">
         <trim prefix=" " suffix=" " suffixOverrides=",">
@@ -59,7 +59,7 @@
                 #{type},
             </if>
             <if test='null != status'>
-                #{status},
+                #{status,typeHandler=com.yegetables.utils.ContentStatusTypeHandler},
             </if>
             <if test='null != password'>
                 #{password},
@@ -171,7 +171,7 @@
                 `type` = #{type},
             </if>
             <if test='null != status'>
-                `status` = #{status},
+                `status` = #{status,typeHandler=com.yegetables.utils.ContentStatusTypeHandler},
             </if>
             <if test='null != password'>
                 `password` = #{password},
@@ -223,7 +223,7 @@
     <select id="getContentsByStatus" resultMap="contentsResultMap">
         select *
         from typecho_contents
-        where status = #{status}
+        where status = #{status,typeHandler=com.yegetables.utils.ContentStatusTypeHandler}
     </select>
 
     <insert id="addContent" parameterType="content" useGeneratedKeys="true" keyProperty="cid">

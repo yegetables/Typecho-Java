@@ -55,7 +55,7 @@ public class User implements Serializable {
     /**
      * 用户组
      */
-    private String group = "visitor";
+    private UserGroup group = UserGroup.visitor;
     /**
      * 用户登录验证码,相当于token
      */
@@ -142,11 +142,11 @@ public class User implements Serializable {
         return this;
     }
 
-    public String getGroup() {
+    public UserGroup getGroup() {
         return group;
     }
 
-    public User setGroup(String group) {
+    public User setGroup(UserGroup group) {
         this.group = group;
         return this;
     }

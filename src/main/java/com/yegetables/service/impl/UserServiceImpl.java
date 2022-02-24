@@ -29,7 +29,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     public ApiResult<String> sendEmailAuthorCode(String email) {
         //        if (getUser(new User().mail(email)) != null)
         //            return new ApiResult<String>().code(ApiResultStatus.Error).message("该邮箱已经注册");
-        String text = RandomTools.getRandomAuthorCode(PropertiesConfig.getAuthCodeLength());
+        String text = RandomTools.getRandomAuthorCode(PropertiesConfig.User.getAuthCodeLength());
         String key = getEmailKey(email);
         //key --- rightcode  存入redis ,5分钟有效
         try

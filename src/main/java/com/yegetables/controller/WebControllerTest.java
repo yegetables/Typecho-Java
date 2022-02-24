@@ -61,9 +61,9 @@ public class WebControllerTest extends BaseController {
     @RequestMapping(value = "/value")
     @ResponseBody
     public String value1() {
-        log.warn("max=" + PropertiesConfig.getNameMaxLength());
+        log.warn("max=" + PropertiesConfig.User.getNameMaxLength());
         //        log.warn("email=" + PropertiesConfig.getEmailRegex());
-        log.warn("authCodeLength=" + PropertiesConfig.getAuthCodeLength());
+        log.warn("authCodeLength=" + PropertiesConfig.User.getAuthCodeLength());
         log.warn("application=" + PropertiesConfig.getApplicationName());
         return "";
     }

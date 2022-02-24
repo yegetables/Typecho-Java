@@ -1,5 +1,7 @@
 package com.yegetables.utils;
 
+import com.yegetables.pojo.ContentStatus;
+import com.yegetables.pojo.MetaType;
 import com.yegetables.pojo.UserGroup;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -15,13 +17,6 @@ public class StringTools {
 
 
     public static String mapGetStringKey(String key, Map map) {
-        //        if (map.containsKey(key))
-        //        {
-        //            String value = String.valueOf(map.get(key));
-        //            return toOkString(value);
-        //            //            if (!StringUtils.isBlank(value) && !StringUtils.equals("null", value)) return value;
-        //        }
-        //        return "";
         return toOkString(map.get(key));
     }
 
@@ -59,7 +54,7 @@ public class StringTools {
     public static class User {
         public static boolean isGroupName(String newGroup) {
             newGroup = toOkString(newGroup);
-            if (isInLength(newGroup, PropertiesConfig.getGroupNameMinLength(), PropertiesConfig.getGroupNameMaxLength()))
+            if (isInLength(newGroup, PropertiesConfig.User.getGroupNameMinLength(), PropertiesConfig.User.getGroupNameMaxLength()))
                 for (UserGroup group : UserGroup.values())
                 {
                     if (group.name().equals(newGroup)) return true;
@@ -69,27 +64,27 @@ public class StringTools {
 
         public static boolean isPassword(String password) {
             password = toOkString(password);
-            if (isInLength(password, PropertiesConfig.getPasswordMinLength(), PropertiesConfig.getPasswordMaxLength()))
+            if (isInLength(password, PropertiesConfig.User.getPasswordMinLength(), PropertiesConfig.User.getPasswordMaxLength()))
                 return true;
             return false;
         }
 
         public static boolean isCode(String code) {
             code = toOkString(code);
-            if (code.length() == PropertiesConfig.getAuthCodeLength()) return true;
+            if (code.length() == PropertiesConfig.User.getAuthCodeLength()) return true;
             return false;
         }
 
         public static boolean isUserName(String username) {
             username = toOkString(username);
-            if (isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
+            if (isInLength(username, PropertiesConfig.User.getNameMinLength(), PropertiesConfig.User.getNameMaxLength()))
                 return true;
             return false;
         }
 
         public static boolean isEmail(String email) {
             email = toOkString(email);
-            if (!isInLength(email, PropertiesConfig.getEmailMinLength(), PropertiesConfig.getEmailMaxLength()))
+            if (!isInLength(email, PropertiesConfig.User.getEmailMinLength(), PropertiesConfig.User.getEmailMaxLength()))
                 return false;
             /*
              * " \w"：匹配字母、数字、下划线。等价于'[A-Za-z0-9_]'。
@@ -107,13 +102,14 @@ public class StringTools {
 
         public static boolean isUrl(String url) {
             url = toOkString(url);
-            if (isInLength(url, PropertiesConfig.getUrlMinLength(), PropertiesConfig.getUrlMaxLength())) return true;
+            if (isInLength(url, PropertiesConfig.User.getUrlMinLength(), PropertiesConfig.User.getUrlMaxLength()))
+                return true;
             return false;
         }
 
         public static boolean isScreenName(String screenName) {
             screenName = toOkString(screenName);
-            if (isInLength(screenName, PropertiesConfig.getScreenNameMinLength(), PropertiesConfig.getScreenNameMaxLength()))
+            if (isInLength(screenName, PropertiesConfig.User.getScreenNameMinLength(), PropertiesConfig.User.getScreenNameMaxLength()))
                 return true;
             return false;
         }
@@ -121,14 +117,28 @@ public class StringTools {
     }
 
     public static class Meta {
-        //        public static boolean isToken(String username) {
-        //            username = toOkString(username);
-        //            if (isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
-        //                return true;
-        //            return false;
-        //        }
+        public static boolean isType(String type) {
+            type = toOkString(type);
+            if (isInLength(type, PropertiesConfig.User.getGroupNameMinLength(), PropertiesConfig.User.getGroupNameMaxLength()))
+                for (MetaType temp : MetaType.values())
+                {
+                    if (temp.name().equals(type)) return true;
+                }
+            return false;
+        }
 
     }
 
+    public static class Content {
+
+        public static ContentStatus valueOf(String value) {
+            value = toOkString(value);
+            for (ContentStatus temp : ContentStatus.values())
+            {
+                if (temp.getValue().equals(value)) return temp;
+            }
+            return null;
+        }
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.yegetables.service;
 
 import com.yegetables.pojo.Meta;
+import com.yegetables.pojo.MetaType;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface MetaService {
 
     List<Meta> allTag();
 
-    List<Meta> allType(String type);
+    List<Meta> allType(MetaType type);
 
     void updateRedisMetaCacheTag();
 
@@ -17,5 +18,5 @@ public interface MetaService {
 
     void updateRedisMetaCache();
 
-    void updateRedisMetaCache(String type);
+    void updateRedisMetaCache(MetaType type);
 }

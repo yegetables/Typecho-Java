@@ -1,6 +1,8 @@
 package com.yegetables.dao;
 
 import com.yegetables.pojo.Content;
+import com.yegetables.pojo.ContentStatus;
+import com.yegetables.pojo.ContentType;
 import com.yegetables.pojo.User;
 import org.springframework.stereotype.Repository;
 
@@ -14,9 +16,9 @@ public interface ContentMapper {
 
     ArrayList<Content> getContentsByAuthorId(Long authorId);
 
-    ArrayList<Content> getContentsByType(String type);
+    ArrayList<Content> getContentsByType(ContentType type);
 
-    ArrayList<Content> getContentsByStatus(String status);
+    ArrayList<Content> getContentsByStatus(ContentStatus status);
     //    ArrayList<Content> getContentsByParent(Content parent);
 
     Integer addContent(Content content);

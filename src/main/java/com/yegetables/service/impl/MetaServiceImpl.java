@@ -1,9 +1,9 @@
 package com.yegetables.service.impl;
 
 import com.yegetables.pojo.Meta;
+import com.yegetables.pojo.MetaType;
 import com.yegetables.service.MetaService;
 import com.yegetables.utils.PropertiesConfig;
-import com.yegetables.utils.StringTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,17 +16,17 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     protected RedisTemplate<String, Meta> redisTemplate;
 
     public List<Meta> allCategory() {
-        return allType("category");
+        return allType(MetaType.category);
     }
 
     public List<Meta> allTag() {
-        return allType("tag");
+        return allType(MetaType.tag);
     }
 
     @Override
-    public List<Meta> allType(String type) {
+    public List<Meta> allType(MetaType type) {
         List<Meta> result = null;
-        type = StringTools.toOkString(type);
+        //        type = StringTools.toOkString(type);
         String key = getTypeKey(type);
         Long size = redisTemplate.opsForList().size(key);
         if (size != null && size > 0)
@@ -42,11 +42,11 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     }
 
 
-    private String getTypeKey(String type) {
-        return PropertiesConfig.getApplicationName() + ":meta:" + type;
+    private String getTypeKey(MetaType type) {
+        return PropertiesConfig.getApplicationName() + ":meta:" + type.name();
     }
 
-    public void updateRedisMetaCache(String type) {
+    public void updateRedisMetaCache(MetaType type) {
         List<Meta> result = null;
         String key = getTypeKey(type);
         redisTemplate.delete(key);
@@ -55,16 +55,17 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     }
 
     public void updateRedisMetaCache() {
-        updateRedisMetaCache("category");
-        updateRedisMetaCache("tag");
-        updateRedisMetaCache("test");
+        for (MetaType type : MetaType.values())
+        {
+            updateRedisMetaCache(type);
+        }
     }
 
     public void updateRedisMetaCacheCategory() {
-        updateRedisMetaCache("category");
+        updateRedisMetaCache(MetaType.category);
     }
 
     public void updateRedisMetaCacheTag() {
-        updateRedisMetaCache("tag");
+        updateRedisMetaCache(MetaType.tag);
     }
 }

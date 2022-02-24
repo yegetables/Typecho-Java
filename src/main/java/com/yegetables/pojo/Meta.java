@@ -1,7 +1,5 @@
 package com.yegetables.pojo;
 
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -9,7 +7,8 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 @Data
-@Accessors(fluent = true)@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Accessors(fluent = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 public class Meta implements Serializable {
     /**
@@ -21,8 +20,6 @@ public class Meta implements Serializable {
      * 项目名称
      */
     private String name;
-
-
     /**
      * 项目标题
      */
@@ -30,7 +27,7 @@ public class Meta implements Serializable {
     /**
      * 项目类型
      */
-    private String type;
+    private MetaType type;
     /**
      * 项目描述
      */
@@ -47,7 +44,6 @@ public class Meta implements Serializable {
      * 父项目
      */
     private Meta parent;
-
 
 
     public Long getMid() {
@@ -77,11 +73,11 @@ public class Meta implements Serializable {
         return this;
     }
 
-    public String getType() {
+    public MetaType getType() {
         return type;
     }
 
-    public Meta setType(String type) {
+    public Meta setType(MetaType type) {
         this.type = type;
         return this;
     }
@@ -121,7 +117,6 @@ public class Meta implements Serializable {
         this.parent = parent;
         return this;
     }
-
 
 
 }

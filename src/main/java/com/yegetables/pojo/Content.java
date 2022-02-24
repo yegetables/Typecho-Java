@@ -1,7 +1,5 @@
 package com.yegetables.pojo;
 
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -10,7 +8,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Data
-@Accessors(fluent = true)@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Accessors(fluent = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 public class Content implements Serializable {
 
@@ -50,7 +49,7 @@ public class Content implements Serializable {
      * 作者id  ---> authorId
      */
     //    @ToString.Exclude
-    private User author ;
+    private User author;
     /**
      * 内容使用的模板
      */
@@ -58,11 +57,11 @@ public class Content implements Serializable {
     /**
      * 文章类型
      */
-    private String type = "post";
+    private ContentType type = ContentType.post;
     /**
      * 文章状态
      */
-    private String status = "publish";
+    private ContentStatus status = ContentStatus.publish;
     /**
      * 文章密码 可以为空
      */
@@ -87,7 +86,7 @@ public class Content implements Serializable {
      * 父级评论
      */
     //    @ToString.Exclude
-    private Content parent ;
+    private Content parent;
 
 
     public Boolean getAllowFeed() {
@@ -180,20 +179,20 @@ public class Content implements Serializable {
         return this;
     }
 
-    public String getType() {
+    public ContentType getType() {
         return type;
     }
 
-    public Content setType(String type) {
+    public Content setType(ContentType type) {
         this.type = type;
         return this;
     }
 
-    public String getStatus() {
+    public ContentStatus getStatus() {
         return status;
     }
 
-    public Content setStatus(String status) {
+    public Content setStatus(ContentStatus status) {
         this.status = status;
         return this;
     }
