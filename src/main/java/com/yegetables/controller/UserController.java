@@ -163,13 +163,13 @@ public class UserController extends BaseController {
         if (map.containsKey("url"))
         {
             String newUrl = StringTools.mapGetStringKey("url", map);
-            if ((newUrl.length() < 150)) user.url(newUrl);
+            if (StringTools.User.isUrl(newUrl)) user.url(newUrl);
             else return new ApiResult<User>().code(ApiResultStatus.Error).message("url不正确[" + newUrl + "]");
         }
         if (map.containsKey("screenName"))
         {
             String newScreenName = StringTools.mapGetStringKey("screenName", map);
-            if ((newScreenName.length() < 32)) user.screenName(newScreenName);
+            if (StringTools.User.isScreenName(newScreenName)) user.screenName(newScreenName);
             else return new ApiResult<User>().code(ApiResultStatus.Error).message("昵称不正确[" + newScreenName + "]");
         }
         if (map.containsKey("email"))
@@ -178,19 +178,24 @@ public class UserController extends BaseController {
             if (StringTools.User.isEmail(newEmail)) user.mail(newEmail);
             else return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱不正确[" + newEmail + "]");
         }
-        return new ApiResult<User>().code(ApiResultStatus.Success).data(user);
+
 
         //        if (map.containsKey("group"))
         //        {
         //            String newGroup = StringTools.mapGetStringKey("group", map);
-        //            if (StringTools.isGroupName(newGroup)){
+        //            if (StringTools.User.isGroupName(newGroup))
+        //            {
         //                user.group(newGroup);
         //            }
         //            else
         //            {
-        //                return new ApiResult<User>().code(ApiResultStatus.Error).message("用户组不正确[" + newGroup + "]").toString();
+        //                return new ApiResult<User>().code(ApiResultStatus.Error).message("用户组不正确[" + newGroup + "]");
         //            }
         //        }
+
+
+        return new ApiResult<User>().code(ApiResultStatus.Success).data(user);
+
 
     }
 

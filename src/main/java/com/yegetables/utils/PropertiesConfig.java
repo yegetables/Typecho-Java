@@ -14,11 +14,71 @@ public class PropertiesConfig {
     static int passwordMaxLength;
     static int passwordMinLength;
     static int authCodeLength;
+    static int urlMaxLength;
+    static int urlMinLength;
+    static int screenNameMaxLength;
+    static int screenNameMinLength;
+    static int groupNameMaxLength;
+    static int groupNameMinLength;
     static String ApplicationName;
     static String emailRegex = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
 
     public static String getApplicationName() {
         return ApplicationName;
+    }
+
+    public static int getUrlMaxLength() {
+        return urlMaxLength;
+    }
+
+    @Value("${user.Url.MaxLength}")
+    public void setUrlMaxLength(int urlMaxLength) {
+        PropertiesConfig.urlMaxLength = urlMaxLength;
+    }
+
+    public static int getUrlMinLength() {
+        return urlMinLength;
+    }
+
+    @Value("${user.Url.MinLength}")
+    public void setUrlMinLength(int urlMinLength) {
+        PropertiesConfig.urlMinLength = urlMinLength;
+    }
+
+    public static int getScreenNameMaxLength() {
+        return screenNameMaxLength;
+    }
+
+    @Value("${user.ScreenName.MaxLength}")
+    public void setScreenNameMaxLength(int screenNameMaxLength) {
+        PropertiesConfig.screenNameMaxLength = screenNameMaxLength;
+    }
+
+    public static int getScreenNameMinLength() {
+        return screenNameMinLength;
+    }
+
+    @Value("${user.ScreenName.MinLength}")
+    public void setScreenNameMinLength(int screenNameMinLength) {
+        PropertiesConfig.screenNameMinLength = screenNameMinLength;
+    }
+
+    public static int getGroupNameMaxLength() {
+        return groupNameMaxLength;
+    }
+
+    @Value("${user.Group.MaxLength}")
+    public void setGroupNameMaxLength(int groupNameMaxLength) {
+        PropertiesConfig.groupNameMaxLength = groupNameMaxLength;
+    }
+
+    public static int getGroupNameMinLength() {
+        return groupNameMinLength;
+    }
+
+    @Value("${user.Group.MinLength}")
+    public void setGroupNameMinLength(int groupNameMinLength) {
+        PropertiesConfig.groupNameMinLength = groupNameMinLength;
     }
 
     @Value("${application.name}")

@@ -1,5 +1,6 @@
 package com.yegetables.utils;
 
+import com.yegetables.pojo.UserGroup;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,11 @@ public class StringTools {
     public static class User {
         public static boolean isGroupName(String newGroup) {
             newGroup = toOkString(newGroup);
-            if ("administrator".equals(newGroup) || "visitor".equals(newGroup)) return true;
+            if (isInLength(newGroup, PropertiesConfig.getGroupNameMinLength(), PropertiesConfig.getGroupNameMaxLength()))
+                for (UserGroup group : UserGroup.values())
+                {
+                    if (group.name().equals(newGroup)) return true;
+                }
             return false;
         }
 
@@ -82,8 +87,6 @@ public class StringTools {
             return false;
         }
 
-        static String emailRegex = PropertiesConfig.getEmailRegex();
-
         public static boolean isEmail(String email) {
             email = toOkString(email);
             if (!isInLength(email, PropertiesConfig.getEmailMinLength(), PropertiesConfig.getEmailMaxLength()))
@@ -96,11 +99,34 @@ public class StringTools {
              * "{n,m}" : 至少出现n个，最多出现m个
              * "$" : 以前面的字符结束
              */
-            String REGEX = emailRegex;
+            String REGEX = PropertiesConfig.getEmailRegex();
             Pattern p = Pattern.compile(REGEX);
             Matcher matcher = p.matcher(email);
             return matcher.matches();
         }
+
+        public static boolean isUrl(String url) {
+            url = toOkString(url);
+            if (isInLength(url, PropertiesConfig.getUrlMinLength(), PropertiesConfig.getUrlMaxLength())) return true;
+            return false;
+        }
+
+        public static boolean isScreenName(String screenName) {
+            screenName = toOkString(screenName);
+            if (isInLength(screenName, PropertiesConfig.getScreenNameMinLength(), PropertiesConfig.getScreenNameMaxLength()))
+                return true;
+            return false;
+        }
+
+    }
+
+    public static class Meta {
+        //        public static boolean isToken(String username) {
+        //            username = toOkString(username);
+        //            if (isInLength(username, PropertiesConfig.getNameMinLength(), PropertiesConfig.getNameMaxLength()))
+        //                return true;
+        //            return false;
+        //        }
 
     }
 
