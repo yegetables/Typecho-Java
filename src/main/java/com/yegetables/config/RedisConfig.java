@@ -80,7 +80,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(@Autowired LettuceConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, ?> redisTemplate(@Autowired LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 

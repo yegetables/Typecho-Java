@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-@SessionAttributes("token")
+//@SessionAttributes("token")
 public class UserController extends BaseController {
 
     /**
@@ -149,8 +149,7 @@ public class UserController extends BaseController {
     /**
      * 用户信息查询
      *
-     * @param token
-     * @return
+     * @return ApiResult的json串
      */
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
     @ResponseBody

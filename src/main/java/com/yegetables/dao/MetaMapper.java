@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public interface MetaMapper {
     ArrayList<Meta> getAllMetas();
 
+    //type 有 2 种类型：category, tag
     ArrayList<Meta> getMetasByType(String type);
 
     Meta getMeta(Long mid);

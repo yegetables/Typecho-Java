@@ -27,7 +27,6 @@ public class BaseServiceImpl {
     protected ContentMapper contentMapper;
     @Autowired
     protected CommentMapper commentMapper;
-    @Autowired
-    protected RedisTemplate<String,Object> redisTemplate;
+
 
 }

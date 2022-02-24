@@ -22,17 +22,19 @@ public class JsonTools {
     }
 
     public static boolean isGoodJson(String json) {
-        if (StringUtils.isBlank(json))
+        if (StringUtils.isBlank(json)) return false;
+        json = json.trim();
+        if (json.startsWith("{") && json.endsWith("}"))
         {
-            return false;
+            try
+            {
+                return JSON.toJSON(json) != null;
+            } catch (JsonSyntaxException e)
+            {
+                return false;
+            }
         }
-        try
-        {
-            return JSON.toJSON(json) != null;
-        } catch (JsonSyntaxException e)
-        {
-            return false;
-        }
+        return false;
     }
 
     public static boolean isJson(String json) {
@@ -46,7 +48,7 @@ public class JsonTools {
         }
         try
         {
-            Map map =  JSON.parseObject(json, Map.class);
+            Map map = JSON.parseObject(json, Map.class);
             return map;
         } catch (Exception e)
         {

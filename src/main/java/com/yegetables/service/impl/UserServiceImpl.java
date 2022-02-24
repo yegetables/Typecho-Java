@@ -7,6 +7,7 @@ import com.yegetables.service.UserService;
 import com.yegetables.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -16,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
+    @Autowired
+    protected RedisTemplate<String, Object> redisTemplate;
     // private final Map<String, String> mailAuthCodeMap = new HashMap<>();
     @Autowired
     MailTools mailTools;
