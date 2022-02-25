@@ -146,6 +146,32 @@ public class UserController extends BaseController {
         else return new ApiResult<User>().code(ApiResultStatus.Error).message("密码找回信息不正确[" + map + "]").toString();
     }
 
+
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @ResponseBody
+    public String logout(@SessionAttribute(name = "token", required = false) String token, HttpSession session) {
+        var userResult = userService.getUserByToken(token);
+        if (userResult.getCode() != ApiResultStatus.Success) return userResult.toString();
+        removeToken(session);
+        return new ApiResult<User>().code(ApiResultStatus.Success).message("成功退出").toString();
+    }
+
+    private void removeToken(HttpSession session) {
+        session.removeAttribute("token");
+    }
+
+
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteAccount(@SessionAttribute(name = "token", required = false) String token, HttpSession session) {
+        var userResult = userService.getUserByToken(token);
+        if (userResult.getCode() != ApiResultStatus.Success) return userResult.toString();
+        userService.deleteAccount(userResult.getData());
+        removeToken(session);
+        return new ApiResult<User>().code(ApiResultStatus.Success).message("成功注销").toString();
+    }
+
+
     private ApiResult<User> fillUser(Map<String, String> map, User user) {
         if (user == null) user = new User();
         if (map.containsKey("username"))

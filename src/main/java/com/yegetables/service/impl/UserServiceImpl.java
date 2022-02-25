@@ -64,16 +64,16 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         {
             Integer sum = userMapper.addUser(newUser);
             if (sum != 1) throw new Exception("添加用户失败");
-            else newUser = userMapper.getUserById(newUser.uid()); //获得数据库默认值  非必要
-            // 注册成功后自动登录
+            else newUser = getUser(new User().uid(newUser.uid())); //获得数据库默认值  非必要
+            //            // 注册成功后自动登录
             String token = getToken(newUser);
-            try
-            {
-                redisTemplate.opsForValue().set(token, newUser, 6, TimeUnit.HOURS);
-            } catch (Exception e)
-            {
-                log.error("redis set failed" + token);
-            }
+            //            try
+            //            {
+            //                redisTemplate.opsForValue().set(token, newUser, 6, TimeUnit.HOURS);
+            //            } catch (Exception e)
+            //            {
+            //                log.error("redis set failed" + token);
+            //            }
             newUser.authCode(token);//只返回前端,不写入数据库表,存在redis中仅供本系统使用
 
 
@@ -84,8 +84,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             {
                 log.error("redis delete failed" + key);
             }
-
-
             return new ApiResult<User>().code(ApiResultStatus.Success).message("注册成功").data(removeSecrets(newUser));
         } catch (Exception e)
         {
@@ -99,23 +97,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public ApiResult<User> login(String username, String password) {
-        User user = userMapper.getUserByName(username);
+        User user = getUser(new User().name(username));
         if (user == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名不存在");
-
         if (!PHPass.CheckPassword(password, user.password()))
             return new ApiResult<User>().code(ApiResultStatus.Error).message("密码错误");
         //   token ---> user map  存入redis
         String token = getToken(user);
         try
         {
-            userMapper.updateUser(user.logged(TimeTools.NowTime()).activated(TimeTools.NowTime()));
-
-            redisTemplate.opsForValue().set(token, user, 6, TimeUnit.HOURS);
+            updateUser(user.logged(TimeTools.NowTime()).activated(TimeTools.NowTime()));
             // php使用数据库的users表的authCode字段当作token和cookie验证登录,因为token生成方式不同,本人的token独立于原版typecho,不写入数据库
             user.authCode(token);//只是返回给前端,不做数据库操作
             return new ApiResult<User>().code(ApiResultStatus.Success).message("登录成功").data(removeSecrets(user));
-
-
         } catch (Exception e)
         {
             String errorMessage = "登录失败";
@@ -129,11 +122,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         //查重
         try
         {
-            User oldUser = userMapper.getUserById(user.uid());
+            User oldUser = getUser(new User().uid(user.uid()));
             if (oldUser == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户不存在");
-            if (user.name() != null && !oldUser.name().equals(user.name()) && userMapper.getUserByName(user.name()) != null)
+            if (user.name() != null && !oldUser.name().equals(user.name()) && getUser(new User().name(user.name())) != null)
                 return new ApiResult<User>().code(ApiResultStatus.Error).message("用户名已存在");
-            if (user.mail() != null && !oldUser.mail().equals(user.mail()) && userMapper.getUserByMail(user.mail()) != null)
+            if (user.mail() != null && !oldUser.mail().equals(user.mail()) && getUser(new User().mail(user.mail())) != null)
                 return new ApiResult<User>().code(ApiResultStatus.Error).message("邮箱已存在");
         } catch (Exception e)
         {
@@ -143,10 +136,40 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
         try
         {
-            Integer sum = userMapper.updateUser(user);
-            if (sum != 1) throw new Exception("更新用户信息失败");
-            User newUser = userMapper.getUserById(user.uid());
-            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(removeSecrets(newUser).authCode(null));
+            updateUser(user);
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(removeSecrets(user).authCode(null));
+        } catch (Exception e)
+        {
+            String errorMessage = "更新用户信息失败";
+            log.error(errorMessage, e);
+            return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public ApiResult<User> findPassword(String email, String password, String code) {
+        String key = getEmailKey(email);
+        Object value = redisTemplate.opsForValue().get(key);
+        if (value == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("请先发送验证码");
+        if (!StringUtils.equalsIgnoreCase(String.valueOf(value), code))
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("验证码错误,请重试");
+
+
+        User user = getUser(new User().mail(email));
+        user.password(phpass.HashPassword(password));
+        try
+        {
+            updateUser(user);
+            try
+            {
+                redisTemplate.delete(key);
+            } catch (Exception e)
+            {
+                log.error("redis delete failed" + key);
+            }
+            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(removeSecrets(user).authCode(null));
         } catch (Exception e)
         {
             String errorMessage = "更新用户信息失败";
@@ -156,8 +179,159 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
+    public ApiResult<User> deleteAccount(User user) {
+        if (user == null || user.uid() == null)
+            return new ApiResult<User>().code(ApiResultStatus.Error).message("用户不存在");
+        User older = getUser(user);
+        if (older == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("用户不存在");
+        String token = getToken(user);
+        try
+        {
+            if (user.uid() != null)
+            {
+                token = getTokenById(user.uid());
+                redisTemplate.delete(token);
+            }
+            if (user.name() != null)
+            {
+                token = getTokenByName(user.name());
+                redisTemplate.delete(token);
+
+            }
+            if (user.mail() != null)
+            {
+                token = getTokenByMail(user.mail());
+                redisTemplate.delete(token);
+            }
+            //            redisTemplate.opsForValue().set(token, user, 6, TimeUnit.HOURS);
+            userMapper.deleteUser(user);
+        } catch (Exception e)
+        {
+            log.error("redis get failed" + token);
+        }
+        return new ApiResult<User>().code(ApiResultStatus.Success).message("删除成功");
+    }
+
+    private User removeSecrets(User user) {
+        user.password(null);
+        user.created(null);
+        user.activated(null);
+        user.logged(null);
+        user.uid(null);
+        //        user .authCode(null);
+        // token不存在redis中, 在user中.  返回时只移除私密数据,不移除token.
+        //由controller层自行移除和设置token
+        return user;
+    }
+
+    private String getToken(User user) {
+        //        String token = PropertiesConfig.getApplicationName() + ":user:";
+        if (user.uid() != null) return getTokenById(user.uid());
+        if (user.name() != null) return getTokenByName(user.name());
+        if ((user.mail() != null)) return getTokenByMail(user.mail());
+        return "";
+    }
+
+    private String getTokenById(Long id) {
+        String token = PropertiesConfig.getApplicationName() + ":user:";
+        if (id != null)
+        {
+            token += "uid:" + id;
+            token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
+            return token;
+        }
+        return "";
+    }
+
+    private String getTokenByName(String name) {
+        String token = PropertiesConfig.getApplicationName() + ":user:";
+        if (name != null)
+        {
+            token += "name:" + name;
+            token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
+            return token;
+        }
+        return "";
+    }
+
+    private String getEmailKey(String email) {
+        String token = PropertiesConfig.getApplicationName() + ":sendEmail:" + email;
+        token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
+        return token;
+    }
+
+    private String getTokenByMail(String email) {
+        String token = PropertiesConfig.getApplicationName() + ":user:";
+
+        if ((email != null))
+        {
+            token += "mail:" + email;
+            token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
+            return token;
+        }
+        return "";
+    }
+
+    @Override
     public User getUser(User user) {
-        return userMapper.getUser(user);
+        String token = getToken(user);
+        try
+        {
+            var result = getUserByToken(token);
+            if (result.code() == ApiResultStatus.Success) return result.data();
+            var newUser = userMapper.getUser(user);
+            if (newUser == null) return null;
+            if (newUser.uid() != null)
+            {
+                token = getTokenById(newUser.uid());
+                redisTemplate.opsForValue().set(token, newUser, 6, TimeUnit.HOURS);
+            }
+            if (newUser.name() != null)
+            {
+                token = getTokenByName(newUser.name());
+                redisTemplate.opsForValue().set(token, newUser, 6, TimeUnit.HOURS);
+            }
+            if (newUser.mail() != null)
+            {
+                token = getTokenByMail(newUser.mail());
+                redisTemplate.opsForValue().set(token, newUser, 6, TimeUnit.HOURS);
+            }
+            return newUser;
+        } catch (Exception e)
+        {
+            log.error("redis get failed" + token);
+        }
+        return null;
+    }
+
+    public void updateUser(User user) {
+        if (user == null || user.uid() == null) return;
+        User older = getUser(user);
+        if (older == null) return;
+        String token = getToken(user);
+        try
+        {
+            if (user.uid() != null)
+            {
+                token = getTokenById(user.uid());
+                redisTemplate.opsForValue().set(token, user, 6, TimeUnit.HOURS);
+            }
+            if (user.name() != null)
+            {
+                token = getTokenByName(user.name());
+                redisTemplate.opsForValue().set(token, user, 6, TimeUnit.HOURS);
+            }
+            if (user.mail() != null)
+            {
+                token = getTokenByMail(user.mail());
+                redisTemplate.opsForValue().set(token, user, 6, TimeUnit.HOURS);
+            }
+            //            redisTemplate.opsForValue().set(token, user, 6, TimeUnit.HOURS);
+            userMapper.updateUser(user);
+        } catch (Exception e)
+        {
+            log.error("redis get failed" + token);
+        }
     }
 
     //可能过期
@@ -178,66 +352,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             log.error("redis get failed" + token);
         }
         return new ApiResult<User>().code(ApiResultStatus.Error).message("从redis获取失败,请重新登录");
-    }
-
-    @Override
-    @Transactional
-    public ApiResult<User> findPassword(String email, String password, String code) {
-        String key = getEmailKey(email);
-        Object value = redisTemplate.opsForValue().get(key);
-        if (value == null) return new ApiResult<User>().code(ApiResultStatus.Error).message("请先发送验证码");
-        if (!StringUtils.equalsIgnoreCase(String.valueOf(value), code))
-            return new ApiResult<User>().code(ApiResultStatus.Error).message("验证码错误,请重试");
-        try
-        {
-            redisTemplate.delete(key);
-        } catch (Exception e)
-        {
-            log.error("redis delete failed" + key);
-        }
-
-        User user = getUser(new User().mail(email));
-        user.password(phpass.HashPassword(password));
-        try
-        {
-            Integer sum = userMapper.updateUser(user);
-            if (sum != 1) throw new Exception("更新用户信息失败");
-            User newUser = userMapper.getUserById(user.uid());
-            return new ApiResult<User>().code(ApiResultStatus.Success).message("更新成功").data(removeSecrets(newUser).authCode(null));
-        } catch (Exception e)
-        {
-            String errorMessage = "更新用户信息失败";
-            log.error(errorMessage, e);
-            return new ApiResult<User>().code(ApiResultStatus.Error).message(errorMessage);
-        }
-    }
-
-    private User removeSecrets(User user) {
-        user.password(null);
-        user.created(null);
-        user.activated(null);
-        user.logged(null);
-        user.uid(null);
-        //        user .authCode(null);
-        // token不存在redis中, 在user中.  返回时只移除私密数据,不移除token.
-        //由controller层自行移除和设置token
-        return user;
-    }
-
-    private String getToken(User user) {
-        String token = PropertiesConfig.getApplicationName() + ":user:" + user.uid() + ":" + user.name();
-        token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
-        return token;
-    }
-
-    private String getEmailKey(String email) {
-        String token = PropertiesConfig.getApplicationName() + ":sendEmail:" + email;
-        token += ":" + DigestUtils.md5DigestAsHex(token.getBytes());
-        return token;
-    }
-
-    void test() {
-        log.warn("hello");
     }
 
 }

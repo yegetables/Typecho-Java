@@ -16,7 +16,7 @@ public class RandomTools {
     }
 
     public static String getRandomPassword() {
-        return RandomStringUtils.randomAlphanumeric(RandomUtils.nextInt(3, 10));
+        return new PHPass().HashPassword(RandomStringUtils.randomAlphanumeric(RandomUtils.nextInt(3, 10)));
     }
 
     public static String getRandomUrl() {

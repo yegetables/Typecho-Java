@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Log4j2
 public class PropertiesConfig {
-
+    @Service
     public static class User {
         static int nameMaxLength;
         static int nameMinLength;
@@ -143,7 +143,7 @@ public class PropertiesConfig {
             User.authCodeLength = authCodeLength;
         }
     }
-
+    @Service
     public static class Meta {
         static int nameMaxLength = 150;
         static int nameMinLength = 0;
@@ -201,7 +201,7 @@ public class PropertiesConfig {
             Meta.descriptionMinLength = descriptionMinLength;
         }
     }
-
+    @Service
     public static class Content {
         static int titleMaxLength = 150;
         static int titleMinLength = 0;
@@ -276,7 +276,7 @@ public class PropertiesConfig {
             Content.templateMinLength = templateMinLength;
         }
     }
-
+    @Service
     public static class Comment {
         static int authorNameMaxLength = 150;
         static int authorNameMinLength = 0;
