@@ -23,11 +23,11 @@
         <!--        <result property="parent" column="parent"/>-->
         <!--        级联 懒加载-->
         <association property="author" column="authorId" javaType="user"
-                     fetchType="lazy" select="com.yegetables.dao.UserMapper.getUserByAuthor"
+                      select="com.yegetables.dao.UserMapper.getUserByAuthor"
         />
         <!--                     resultMap="com.yegetables.dao.UserMapper.usersResultMap"-->
 
-        <association property="parent" column="parent" fetchType="lazy" select="getContentByParent" javaType="content"/>
+        <association property="parent" column="parent"  select="getContentByParent" javaType="content"/>
     </resultMap>
     <sql id="pojoName">
         <trim prefix=" " suffix=" " suffixOverrides=",">
@@ -250,4 +250,10 @@
         from typecho_contents
         <include refid="findCondition"/>
     </delete>
+
+    <select id="getContentBySlug" resultMap="contentsResultMap">
+        select *
+        from typecho_contents
+        where slug = #{slug}
+    </select>
 </mapper>

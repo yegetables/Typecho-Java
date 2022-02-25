@@ -6,7 +6,7 @@
     <!-- #1.配置 db的资源-->
     <!--    <context:property-placeholder location="classpath:db.properties"/>-->
     <!-- #2.配置bean  datasource-->
-    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+    <bean id="dataSource" lazy-init="false" class="com.alibaba.druid.pool.DruidDataSource">
         <!--        连接池属性        -->
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
@@ -25,7 +25,7 @@
         <property name="queryTimeout" value="10000"/>
     </bean>
     <!--#3.配置SqlSessionFactory-->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" lazy-init="false">
         <property name="dataSource" ref="dataSource"/>
         <!--        mybatis 的全局配置文件-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
@@ -42,23 +42,23 @@
         <property name="basePackage" value="com.yegetables.dao"/>
     </bean>
 
-<!--    <bean id="redisStandaloneConfiguration"-->
-<!--          class="org.springframework.data.redis.connection.RedisStandaloneConfiguration">-->
-<!--        <property name="hostName" value="${redis.host}"/>-->
-<!--        <property name="port" value="${redis.port}"/>-->
-<!--        <property name="password" value="${redis.password}"/>-->
-<!--    </bean>-->
-<!--    <bean id="genericObjectPoolConfig" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
-<!--        <constructor-arg name="standaloneConfig" ref="redisStandaloneConfiguration"/>-->
-<!--        <constructor-arg name="clientConfig" ref="redisClientConfiguration"/>-->
-<!--    </bean>-->
-<!--    <bean id="redisClientConfiguration"-->
-<!--          class="org.springframework.data.redis.connection.jedis.JedisClientConfiguration">-->
-<!--    </bean>-->
-<!--    <bean id="redisClientConfigurationBuilder"-->
-<!--          class="org.springframework.data.redis.connection.jedis.JedisClientConfiguration.DefaultJedisClientConfigurationBuilder">-->
-<!--        <property name="poolConfig" ref="genericObjectPoolConfig"/>-->
-<!--    </bean>-->
+    <!--    <bean id="redisStandaloneConfiguration"-->
+    <!--          class="org.springframework.data.redis.connection.RedisStandaloneConfiguration">-->
+    <!--        <property name="hostName" value="${redis.host}"/>-->
+    <!--        <property name="port" value="${redis.port}"/>-->
+    <!--        <property name="password" value="${redis.password}"/>-->
+    <!--    </bean>-->
+    <!--    <bean id="genericObjectPoolConfig" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
+    <!--        <constructor-arg name="standaloneConfig" ref="redisStandaloneConfiguration"/>-->
+    <!--        <constructor-arg name="clientConfig" ref="redisClientConfiguration"/>-->
+    <!--    </bean>-->
+    <!--    <bean id="redisClientConfiguration"-->
+    <!--          class="org.springframework.data.redis.connection.jedis.JedisClientConfiguration">-->
+    <!--    </bean>-->
+    <!--    <bean id="redisClientConfigurationBuilder"-->
+    <!--          class="org.springframework.data.redis.connection.jedis.JedisClientConfiguration.DefaultJedisClientConfigurationBuilder">-->
+    <!--        <property name="poolConfig" ref="genericObjectPoolConfig"/>-->
+    <!--    </bean>-->
 
 
 </beans>

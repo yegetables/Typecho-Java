@@ -42,4 +42,6 @@ public interface ContentMapper {
     default ArrayList<Content> getContentsByAuthor(User author) {
         return getContentsByAuthorId(author.uid());
     }
+
+    Content getContentBySlug(String slug);
 }

@@ -118,6 +118,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ApiResult<User> changeUserInfo(User user) {
         //查重
         try
@@ -179,6 +180,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ApiResult<User> deleteAccount(User user) {
         if (user == null || user.uid() == null)
             return new ApiResult<User>().code(ApiResultStatus.Error).message("用户不存在");
@@ -212,7 +214,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return new ApiResult<User>().code(ApiResultStatus.Success).message("删除成功");
     }
 
-    private User removeSecrets(User user) {
+    public static User removeSecrets(User user) {
         user.password(null);
         user.created(null);
         user.activated(null);
@@ -304,6 +306,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return null;
     }
 
+    @Transactional
     public void updateUser(User user) {
         if (user == null || user.uid() == null) return;
         User older = getUser(user);
