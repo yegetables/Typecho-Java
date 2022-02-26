@@ -1,19 +1,17 @@
 package com.yegetables.config;
 
 import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import java.time.Duration;
+import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
 @PropertySource(value = "classpath:config.properties")
@@ -40,47 +38,58 @@ public class RedisConfig {
     @Value("${redis.pool.maxTotal}")
     private int maxTotal;
 
-    //    @Bean
-    //    public JedisConnectionFactory redisConnectionFactory() {
-    //
-    //        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(hostName, port);
-    //        config.setPassword(password);
-    //
-    //        GenericObjectPoolConfig genericObjectpoolConfig = new GenericObjectPoolConfig();
-    //        genericObjectpoolConfig.setMaxIdle(maxIdle);
-    //        genericObjectpoolConfig.setMinIdle(minIdle);
-    //        genericObjectpoolConfig.setMaxWait(Duration.ofSeconds(3));
-    //        genericObjectpoolConfig.setMaxTotal(maxTotal);
-    //        genericObjectpoolConfig.setMinIdle(minIdle);
-    //
-    //        JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder().usePooling().poolConfig(genericObjectpoolConfig).build();
-    //        return new JedisConnectionFactory(config, jedisClientConfiguration);
-    //    }
-    //
-
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(hostName);
-        redisStandaloneConfiguration.setPort(port);
+    public JedisConnectionFactory jedisConnectionFactory() {
+
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(hostName, port);
         redisStandaloneConfiguration.setPassword(password);
 
-        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-        poolConfig.setMaxIdle(maxIdle);
-        poolConfig.setMinIdle(minIdle);
-        poolConfig.setMaxWaitMillis(maxWaitMillis);
-        poolConfig.setMaxTotal(maxTotal);
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxIdle(maxIdle);
+        jedisPoolConfig.setMinIdle(minIdle);
+        jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+        jedisPoolConfig.setMaxTotal(maxTotal);
 
-        LettucePoolingClientConfiguration lettucePoolingClientConfiguration = LettucePoolingClientConfiguration.builder().commandTimeout(Duration.ofSeconds(10)).shutdownTimeout(Duration.ZERO).poolConfig(poolConfig).build();
+        JedisClientConfiguration.JedisPoolingClientConfigurationBuilder jpcf = (JedisClientConfiguration.JedisPoolingClientConfigurationBuilder) JedisClientConfiguration.builder();
+        //修改我们的连接池配置
+        jpcf.poolConfig(jedisPoolConfig);
 
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration, lettucePoolingClientConfiguration);
-        lettuceConnectionFactory.setShareNativeConnection(false);
 
-        return lettuceConnectionFactory;
+        //        GenericObjectPoolConfig genericObjectpoolConfig = new GenericObjectPoolConfig();
+        //        genericObjectpoolConfig.setMaxIdle(maxIdle);
+        //        genericObjectpoolConfig.setMinIdle(minIdle);
+        //        genericObjectpoolConfig.setMaxWait(Duration.ofSeconds(3));
+        //        genericObjectpoolConfig.setMaxTotal(maxTotal);
+        //        genericObjectpoolConfig.setMinIdle(minIdle);
+        JedisClientConfiguration jedisClientConfiguration = jpcf.build();
+        //        JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder().usePooling().poolConfig(genericObjectpoolConfig).build();
+        return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration);
     }
 
+
+    //    @Bean
+    //    public LettuceConnectionFactory redisConnectionFactory() {
+    //        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+    //        redisStandaloneConfiguration.setHostName(hostName);
+    //        redisStandaloneConfiguration.setPort(port);
+    //        redisStandaloneConfiguration.setPassword(password);
+    //
+    //        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+    //        poolConfig.setMaxIdle(maxIdle);
+    //        poolConfig.setMinIdle(minIdle);
+    //        poolConfig.setMaxWaitMillis(maxWaitMillis);
+    //        poolConfig.setMaxTotal(maxTotal);
+    //
+    //        LettucePoolingClientConfiguration lettucePoolingClientConfiguration = LettucePoolingClientConfiguration.builder().commandTimeout(Duration.ofSeconds(10)).shutdownTimeout(Duration.ZERO).poolConfig(poolConfig).build();
+    //
+    //        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration, lettucePoolingClientConfiguration);
+    //        lettuceConnectionFactory.setShareNativeConnection(false);
+    //
+    //        return lettuceConnectionFactory;
+    //    }
+
     @Bean
-    public RedisTemplate<String, ?> redisTemplate(@Autowired LettuceConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, ?> redisTemplate(@Autowired JedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
