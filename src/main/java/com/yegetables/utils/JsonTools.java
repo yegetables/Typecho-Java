@@ -1,7 +1,6 @@
 package com.yegetables.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.google.gson.JsonSyntaxException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.platform.commons.util.StringUtils;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class JsonTools {
             try
             {
                 return JSON.toJSON(json) != null;
-            } catch (JsonSyntaxException e)
+            } catch (Exception e)
             {
                 return false;
             }
