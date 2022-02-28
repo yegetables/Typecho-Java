@@ -139,4 +139,10 @@
         </set>
         <include refid="findCondition"/>
     </update>
+
+    <select id="getMetaBySlug" resultMap="metasResultMap">
+        select *
+        from typecho_metas
+        where slug = #{slug}
+    </select>
 </mapper>

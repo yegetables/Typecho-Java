@@ -1,5 +1,6 @@
 package com.yegetables.service;
 
+import com.yegetables.controller.dto.ApiResult;
 import com.yegetables.pojo.Meta;
 import com.yegetables.pojo.MetaType;
 
@@ -19,4 +20,10 @@ public interface MetaService {
     void updateRedisMetaCache();
 
     void updateRedisMetaCache(MetaType type);
+
+    ApiResult<Meta> addMeta(Meta meta);
+
+    ApiResult<Meta> deleteMetaBySlug(String slug);
+
+    Meta getMetaBySlug(String slug);
 }

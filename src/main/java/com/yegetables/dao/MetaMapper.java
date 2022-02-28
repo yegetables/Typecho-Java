@@ -23,4 +23,6 @@ public interface MetaMapper {
     default Integer deleteMeta(Meta meta) {
         return deleteMeta(meta.mid());
     }
+
+    Meta getMetaBySlug(String slug);
 }

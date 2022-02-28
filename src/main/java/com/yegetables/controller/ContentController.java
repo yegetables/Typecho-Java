@@ -147,4 +147,14 @@ public class ContentController extends BaseController {
     }
 
 
+    @RequestMapping("/getContent")
+    @ResponseBody
+    public String getContent(@RequestBody Map<String, String> map) {
+
+        var content = contentService.getContent(cid);
+        if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("文章不存在").toString();
+        return new ApiResult<Content>().code(ApiResultStatus.Success).data(content).toString();
+    }
+
+
 }

@@ -147,6 +147,12 @@ public class UserController extends BaseController {
     }
 
 
+    /**
+     * 登出
+     * @param token 已登录的token
+     * @param session 当前session
+     * @return ApiResult的json串
+     */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     @ResponseBody
     public String logout(@SessionAttribute(name = "token", required = false) String token, HttpSession session) {
@@ -161,6 +167,12 @@ public class UserController extends BaseController {
     }
 
 
+    /**
+     * 注销账号
+     * @param token 已登录的token
+     * @param session 当前session
+     * @return ApiResult的json串
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public String deleteAccount(@SessionAttribute(name = "token", required = false) String token, HttpSession session) {
