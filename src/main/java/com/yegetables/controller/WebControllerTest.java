@@ -4,13 +4,17 @@ package com.yegetables.controller;
 import com.yegetables.pojo.User;
 import com.yegetables.utils.PropertiesConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 @Controller
@@ -90,6 +94,35 @@ public class WebControllerTest extends BaseController {
             log.error("", e);
 
         }
+        return "";
+    }
+
+    @RequestMapping(value = "/redis2")
+    @ResponseBody
+    public String redis2() {
+        // 执行 lua 脚本
+        DefaultRedisScript<String> redisScript = new DefaultRedisScript<>();
+        //        // 指定 lua 脚本
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/setAndGet.lua")));
+        //        // 指定返回类型
+        redisScript.setResultType(String.class);
+        //        // 参数一：redisScript，参数二：key列表，参数三：arg（可多个）
+        String result = redisTemplate.execute(redisScript, Collections.singletonList("key1"), "value1");
+        System.out.println(result);
+        //        try
+        //        {
+        //            StringBuilder lua = new StringBuilder();
+        //            var reader = new BufferedReader(new FileReader(new File("CLASSPATH:lua/setAndGet.lua")));
+        //            String line = "";
+        //            while ((line = reader.readLine()) != null)
+        //            {
+        //                lua.append(line);
+        //            }
+        //            //            redisTemplate.execute()
+        //        } catch (IOException ex)
+        //        {
+        //            ex.printStackTrace();
+        //        }
         return "";
     }
 

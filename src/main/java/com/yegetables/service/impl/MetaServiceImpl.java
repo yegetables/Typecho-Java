@@ -10,6 +10,7 @@ import com.yegetables.utils.StringTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,6 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     @Override
     public List<Meta> allType(MetaType type) {
         List<Meta> result = null;
-        //        type = StringTools.toOkString(type);
         String key = getTypeKey(type);
         Long size = redisTemplate.opsForList().size(key);
         if (size != null && size > 0)
@@ -55,7 +55,7 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     public Meta getMetaBySlug(String slug) {
         if (slug == null) return null;
         String key = getSlugKey(slug);
-        Meta meta = redisTemplate.opsForValue().get(key);
+        Meta meta = (Meta) redisTemplate.opsForValue().get(key);
         if (meta == null)
         {
             meta = metaMapper.getMetaBySlug(slug);
@@ -82,7 +82,6 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     public void updateRedisMetaCache(MetaType type) {
         List<Meta> result = null;
         String key = getTypeKey(type);
-        //        redisTemplate.delete(key);
         result = metaMapper.getMetasByType(type);
         if (result != null && result.size() > 0)
         {
@@ -92,13 +91,12 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
                 redisTemplate.opsForValue().set(slugKey, meta, 6, TimeUnit.HOURS);
             });
         }
-        else
-        {
-            redisTemplate.delete(key);
-        }
+        else redisTemplate.delete(key);
+
     }
 
     @Override
+    @Transactional
     public ApiResult<Meta> addMeta(Meta meta) {
         if (getMetaBySlug(meta.getSlug()) != null)
             return new ApiResult<Meta>().code(ApiResultStatus.Error).message("别名已存在");
@@ -109,7 +107,6 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
             if (meta == null) return new ApiResult<Meta>().code(ApiResultStatus.Error).message("添加失败");
             redisTemplate.opsForList().leftPush(getTypeKey(meta.getType()), meta);
             redisTemplate.opsForValue().set(getSlugKey(meta.getSlug()), meta);
-            //            updateRedisMetaCache(meta.getType());
         } catch (Exception e)
         {
             return new ApiResult<Meta>().code(ApiResultStatus.Error).message("添加失败");
@@ -118,6 +115,7 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
     }
 
     @Override
+    @Transactional
     public ApiResult<Meta> deleteMetaBySlug(String slug) {
         var meta = getMetaBySlug(slug);
         if (meta == null) return new ApiResult<Meta>().code(ApiResultStatus.Error).message("别名不存在");
@@ -132,7 +130,6 @@ public class MetaServiceImpl extends BaseServiceImpl implements MetaService {
         }
         return new ApiResult<Meta>().message("成功").data(meta);
     }
-
 
     public void updateRedisMetaCache() {
         for (MetaType type : MetaType.values())

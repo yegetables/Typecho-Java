@@ -19,7 +19,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     @Autowired
     protected RedisTemplate<String, Object> redisTemplate;
-    // private final Map<String, String> mailAuthCodeMap = new HashMap<>();
     @Autowired
     MailTools mailTools;
     @Autowired

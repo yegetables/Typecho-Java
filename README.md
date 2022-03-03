@@ -5,8 +5,8 @@
 * Spring
 * Spring MVC
 * Mybatis
+* redis
 * [TODO]thymeleaf
-* [TODO] redis
 
 ## 组件选取
 
