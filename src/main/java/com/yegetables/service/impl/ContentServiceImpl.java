@@ -76,6 +76,8 @@ public class ContentServiceImpl extends BaseServiceImpl implements ContentServic
             if (result.code() == ApiResultStatus.Success) return result.data();
             newContent = contentMapper.getContentBySlug(content.slug());
         }
+        UserServiceImpl.removeSecrets(content.author());
+        content.author(null);
         if (token == null || newContent == null) return null;
         token = getTokenByCid(newContent.cid());
         redisTemplate.opsForValue().set(token, newContent, 6, TimeUnit.HOURS);
@@ -95,20 +97,16 @@ public class ContentServiceImpl extends BaseServiceImpl implements ContentServic
     public ApiResult<Content> deleteContent(Content content) {
         if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("参数不能为空");
 
-        ArrayList<String> contentList = new ArrayList<String>();
+        ArrayList<String> contentList = new ArrayList<>();
         if (content.cid() != null) contentList.add(getTokenByCid(content.cid()));
         if (content.slug() != null) contentList.add(getTokenBySlug(content.slug()));
 
         try
         {
             //双删
-            contentList.forEach(token -> {
-                redisTemplate.delete(token);
-            });
+            contentList.forEach(token -> redisTemplate.delete(token));
             contentMapper.deleteContent(content);
-            contentList.forEach(token -> {
-                redisTemplate.delete(token);
-            });
+            contentList.forEach(token -> redisTemplate.delete(token));
         } catch (Exception e)
         {
             return new ApiResult<Content>().code(ApiResultStatus.Error).message("删除失败");
@@ -127,7 +125,10 @@ public class ContentServiceImpl extends BaseServiceImpl implements ContentServic
     @Transactional
     public ApiResult<Content> updateContent(Content content) {
         if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("参数不能为空");
-        String token = getTokenByCid(content.cid());
+        String token;
+        if (content.cid() != null) token = getTokenByCid(content.cid());
+        else token = getTokenBySlug(content.slug());
+
         var result = getContentByToken(token);
         if (result.code() != ApiResultStatus.Success)
             return new ApiResult<Content>().code(ApiResultStatus.Error).message("更新失败");
@@ -139,13 +140,22 @@ public class ContentServiceImpl extends BaseServiceImpl implements ContentServic
         try
         {
             content.modified(TimeTools.NowTime());
-            redisTemplate.opsForValue().set(token, content, 6, TimeUnit.HOURS);
             contentMapper.updateContent(content);
+            if (content.cid() != null)
+            {
+                token = getTokenByCid(content.cid());
+                redisTemplate.opsForValue().set(token, content, 6, TimeUnit.HOURS);
+            }
+            if (content.slug() != null)
+            {
+                token = getTokenBySlug(content.slug());
+                redisTemplate.opsForValue().set(token, content, 6, TimeUnit.HOURS);
+            }
         } catch (Exception e)
         {
             return new ApiResult<Content>().code(ApiResultStatus.Error).message("更新失败");
         }
-        return new ApiResult<Content>().code(ApiResultStatus.Success).message("更新成功");
+        return new ApiResult<Content>().code(ApiResultStatus.Success).message("更新成功").data(content);
     }
 
     @Override
@@ -153,7 +163,9 @@ public class ContentServiceImpl extends BaseServiceImpl implements ContentServic
         if (author == null) return null;
         var list = contentMapper.getContentsByAuthor(author);
         list.forEach(content -> {
-            String token = null;
+            UserServiceImpl.removeSecrets(content.author());
+            content.author().authCode(null);
+            String token;
             token = getTokenByCid(content.cid());
             redisTemplate.opsForValue().set(token, content, 6, TimeUnit.HOURS);
             token = getTokenBySlug(content.slug());

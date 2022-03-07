@@ -116,65 +116,52 @@ public class ContentController extends BaseController {
      * 删除内容
      *
      * @param token 用户token
-     * @param json  内容id
+     * @param map   cid or slug
      * @return 删除结果
      */
     @RequestMapping("/deleteContent")
     @ResponseBody
     public String deleteContent(@SessionAttribute(name = "token", required = false) String token, @RequestBody Map<String, String> map) {
-        long cid = -1L;
-        String slug = null;
-        if (map.containsKey("cid") && map.containsKey("slug"))
-            return new ApiResult<Content>().code(ApiResultStatus.Error).message("单一cid或者slug").toString();
-        if (map.containsKey("cid"))
-        {
-            cid = StringTools.mapGetLongKey("cid", map);
-            if (cid <= 0) return new ApiResult<Content>().code(ApiResultStatus.Error).message("cid不合法").toString();
-        }
-        if (map.containsKey("slug"))
-        {
-            slug = StringTools.mapGetStringKey("slug", map);
-            if (!StringTools.Content.isSlug(slug))
-                return new ApiResult<Content>().code(ApiResultStatus.Error).message("slug不合法").toString();
-        }
 
         var userResult = userService.getUserByToken(token);
         if (userResult.getCode() != ApiResultStatus.Success || userResult.data() == null) return userResult.toString();
         var user = userResult.data();
-        Content content = null;
-        if (map.containsKey("cid")) content = contentService.getContent(new Content().cid(cid));
-        if (map.containsKey("slug")) content = contentService.getContent(new Content().slug(slug));
-        if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("内容不存在").toString();
+
+        Content content;
+        var result = findOnlyContentByIdOrSlug(map);
+        if (result.getCode() != ApiResultStatus.Success) return result.toString();
+        else content = result.data();
+
         if (content.author() == null || !Objects.equals(content.author().uid(), user.uid()))
             return new ApiResult<Content>().code(ApiResultStatus.Error).message("没有权限").toString();
         return contentService.deleteContent(content).toString();
     }
 
     /**
-     * 获取内容
+     * 更新内容
      *
      * @param token 用户token
-     * @param map   内容id
+     * @param map   cid or slug , (优先cid ,同时存在时 修改cid的slug),其他参数
      * @return 内容
      */
     @RequestMapping("/updateContent")
     @ResponseBody
     public String updateContent(@SessionAttribute(name = "token", required = false) String token, @RequestBody Map<String, String> map) {
+
+
+        Content content;
+        var result = findOnlyContentByIdOrSlug(map);
+        if (result.getCode() != ApiResultStatus.Success) return result.toString();
+        else content = result.data();
+
         var userResult = userService.getUserByToken(token);
         if (userResult.getCode() != ApiResultStatus.Success || userResult.data() == null) return userResult.toString();
         User user = userResult.getData();
 
-        if (!map.containsKey("cid"))
-            return new ApiResult<Content>().code(ApiResultStatus.Error).message("请传递cid参数").toString();
-        var cid = StringTools.mapGetLongKey("cid", map);
-        var content = contentService.getContent(new Content().cid(cid));
-        if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("文章不存在").toString();
         if (content.author() == null || !Objects.equals(content.author().uid(), user.uid()))
-        {
             return new ApiResult<Content>().code(ApiResultStatus.Error).message("没有权限").toString();
-        }
 
-        var result = fillContent(map, content);
+        result = fillContent(map, content);
         if (result.getCode() != ApiResultStatus.Success) return result.toString();
         return contentService.updateContent(content).toString();
 
@@ -182,43 +169,78 @@ public class ContentController extends BaseController {
 
 
     /**
-     * 获取内容
+     * 获取作者内容
      *
-     * @param map 内容id
+     * @param map authorId or authorName ,同时存在时以id为准
      * @return 内容
      */
-    @RequestMapping("/getContent")
+    @RequestMapping("/getContentByAuthor")
     @ResponseBody
-    public String getContent(@RequestBody Map<String, String> map) {
-        if (map.containsKey("cid"))
-        {
-            var cid = StringTools.mapGetLongKey("cid", map);
-            var content = contentService.getContent(new Content().cid(cid));
-            if (content == null)
-                return new ApiResult<Content>().code(ApiResultStatus.Error).message("文章不存在").toString();
-            return new ApiResult<Content>().code(ApiResultStatus.Success).data(content).toString();
-        }
+    public String getContentByAuthor(@RequestBody Map<String, String> map) {
         if (map.containsKey("authorName") || map.containsKey("authorId"))
         {
             User author = null;
-            if (map.containsKey("authorName"))
-            {
-                author = userService.getUser(new User().name(StringTools.mapGetStringKey("authorName", map)));
-            }
             if (map.containsKey("authorId"))
             {
-                author = userService.getUser(new User().uid(StringTools.mapGetLongKey("authorId", map)));
-
+                Long authorId = StringTools.mapGetLongKey("authorId", map);
+                author = userService.getUser(new User().uid(authorId));
+                if (author == null)
+                    return new ApiResult<Content>().code(ApiResultStatus.Error).message("用户不存在").toString();
             }
-            if (author == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("用户不存在").toString();
+            if (map.containsKey("authorName") && author == null)
+            {
+                String authorName = StringTools.mapGetStringKey("authorName", map);
+                if (StringTools.User.isUserName(authorName)) author = userService.getUser(new User().name(authorName));
+                else return new ApiResult<Content>().code(ApiResultStatus.Error).message("用户名错误").toString();
+                if (author == null)
+                    return new ApiResult<Content>().code(ApiResultStatus.Error).message("用户不存在").toString();
+            }
+
             var content = contentService.getContentByAuthor(author);
             if (content == null || content.size() == 0)
                 return new ApiResult<Content>().code(ApiResultStatus.Error).message("用户没有发表文章").toString();
             return new ApiResult<List<Content>>().code(ApiResultStatus.Success).data(content).toString();
         }
-
-
-        return new ApiResult<Content>().code(ApiResultStatus.Error).message("请传递cid参数").toString();
+        return new ApiResult<Content>().code(ApiResultStatus.Error).message("参数错误").toString();
     }
+
+
+    /**
+     * 获取单一内容
+     *
+     * @param map cid or slug ,同时存在时以id为准
+     * @return 内容
+     */
+    @RequestMapping("/getContent")
+    @ResponseBody
+    public ApiResult<Content> findOnlyContentByIdOrSlug(@RequestBody  Map<String, String> map) {
+        long cid;
+        String slug;
+        Content content;
+
+
+        if (map.containsKey("cid"))
+        {
+            cid = StringTools.mapGetLongKey("cid", map);
+            if (cid <= 0) return new ApiResult<Content>().code(ApiResultStatus.Error).message("cid不合法");
+            content = contentService.getContent(new Content().cid(cid));
+            if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("内容不存在");
+            return new ApiResult<Content>().code(ApiResultStatus.Success).data(content).message("成功");
+
+        }
+        if (map.containsKey("slug"))
+        {
+            slug = StringTools.mapGetStringKey("slug", map);
+            if (!StringTools.Content.isSlug(slug))
+                return new ApiResult<Content>().code(ApiResultStatus.Error).message("slug不合法");
+            content = contentService.getContent(new Content().slug(slug));
+            if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("内容不存在");
+            return new ApiResult<Content>().code(ApiResultStatus.Success).data(content).message("成功");
+
+        }
+        return new ApiResult<Content>().code(ApiResultStatus.Error).message("请传递cid或slug参数");
+
+    }
+
 
 }
