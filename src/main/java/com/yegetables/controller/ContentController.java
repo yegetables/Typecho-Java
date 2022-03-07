@@ -4,7 +4,6 @@ import com.yegetables.controller.dto.ApiResult;
 import com.yegetables.controller.dto.ApiResultStatus;
 import com.yegetables.pojo.Content;
 import com.yegetables.pojo.User;
-import com.yegetables.utils.JsonTools;
 import com.yegetables.utils.RandomTools;
 import com.yegetables.utils.StringTools;
 import com.yegetables.utils.TimeTools;
@@ -122,21 +121,32 @@ public class ContentController extends BaseController {
      */
     @RequestMapping("/deleteContent")
     @ResponseBody
-    public String deleteContent(@SessionAttribute(name = "token", required = false) String token, @RequestBody String json) {
+    public String deleteContent(@SessionAttribute(name = "token", required = false) String token, @RequestBody Map<String, String> map) {
         long cid = -1L;
-        if (JsonTools.isJson(json)) cid = StringTools.mapGetLongKey("cid", jsonTools.JsonToMap(json));
-        if (cid < 0) return new ApiResult<Content>().code(ApiResultStatus.Error).message("cid不合法").toString();
+        String slug = null;
+        if (map.containsKey("cid") && map.containsKey("slug"))
+            return new ApiResult<Content>().code(ApiResultStatus.Error).message("单一cid或者slug").toString();
+        if (map.containsKey("cid"))
+        {
+            cid = StringTools.mapGetLongKey("cid", map);
+            if (cid <= 0) return new ApiResult<Content>().code(ApiResultStatus.Error).message("cid不合法").toString();
+        }
+        if (map.containsKey("slug"))
+        {
+            slug = StringTools.mapGetStringKey("slug", map);
+            if (!StringTools.Content.isSlug(slug))
+                return new ApiResult<Content>().code(ApiResultStatus.Error).message("slug不合法").toString();
+        }
 
         var userResult = userService.getUserByToken(token);
         if (userResult.getCode() != ApiResultStatus.Success || userResult.data() == null) return userResult.toString();
         var user = userResult.data();
-
-        var content = contentService.getContent(new Content().cid(cid));
-        if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("文章不存在").toString();
-
+        Content content = null;
+        if (map.containsKey("cid")) content = contentService.getContent(new Content().cid(cid));
+        if (map.containsKey("slug")) content = contentService.getContent(new Content().slug(slug));
+        if (content == null) return new ApiResult<Content>().code(ApiResultStatus.Error).message("内容不存在").toString();
         if (content.author() == null || !Objects.equals(content.author().uid(), user.uid()))
             return new ApiResult<Content>().code(ApiResultStatus.Error).message("没有权限").toString();
-
         return contentService.deleteContent(content).toString();
     }
 

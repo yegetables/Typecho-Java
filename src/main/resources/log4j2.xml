@@ -8,7 +8,8 @@
         <!-- ${web:rootDir}是web项目根路径,java项目没有这个变量,需要删掉,否则会报异常 -->
         <!--        <property name="basePath">log</property>-->
         <!-- <property name="basePath">${web:rootDir}/log4j2Logs</property>-->
-        <property name="basePath">D:\arch1\work\Typecho-Java\src\main\resources\log</property>
+<!--        <property name="basePath">D:\arch1\work\Typecho-Java\src\main\resources\log</property>-->
+        <property name="basePath">/home/ajian/work/Typecho-Java/src/main/resources/log</property>
 
         <!-- 控制台默认输出格式,"%-5level":日志级别,"%l":输出完整的错误位置,是小写的L,因为有行号显示,所以影响日志输出的性能 -->
         <property name="console_log_pattern">[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n</property>
