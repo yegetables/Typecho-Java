@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/comment")
@@ -61,8 +62,8 @@ public class CommentController extends BaseController {
     /**
      * 查询评论
      *
-     * @param map coid
-     * @return
+     * @param map coid评论id
+     * @return ApiResult
      */
     @ResponseBody
     @RequestMapping("/getComment")
@@ -75,24 +76,55 @@ public class CommentController extends BaseController {
         return new ApiResult<Comment>().data(comment1).code(ApiResultStatus.Success).message("查询成功").toString();
     }
 
+    /**
+     * 查询文章所有评论
+     *
+     * @param map cid或者slug ,cid为主
+     * @return ApiResult
+     */
     @ResponseBody
     @RequestMapping("/getCommentsByContent")
     public String getCommentsByContent(@RequestBody Map<String, String> map) {
         if (!map.containsKey("cid") && !map.containsKey("slug"))
             return new ApiResult<Comment>().code(ApiResultStatus.Error).message("文章cid或slug不能为空").toString();
         Content content = new Content();
-        if (map.containsKey("cid"))
-        {
-            Long cid = StringTools.mapGetLongKey("cid", map);
-            content.cid(cid);
-        }
         if (map.containsKey("slug"))
         {
             String slug = StringTools.mapGetStringKey("slug", map);
             content.slug(slug);
         }
+        if (map.containsKey("cid"))
+        {
+            Long cid = StringTools.mapGetLongKey("cid", map);
+            content.slug(null);
+            content.cid(cid);
+        }
         return commentService.getCommentsByContent(content).toString();
     }
+
+
+    @ResponseBody
+    @RequestMapping("/deleteComment")
+    public String deleteComment(@SessionAttribute(name = "token", required = false) String token, @RequestBody Map<String, String> map) {
+
+        if (!map.containsKey("coid"))
+            return new ApiResult<Comment>().code(ApiResultStatus.Error).message("文章cid不能为空").toString();
+        Long coid = StringTools.mapGetLongKey("coid", map);
+
+        var userResult = userService.getUserByToken(token);
+        if (userResult.getCode() != ApiResultStatus.Success || userResult.data() == null)
+            return new ApiResult<Comment>().code(ApiResultStatus.Error).message("请先登陆").toString();
+        var user = userResult.data();
+        Comment comment = commentService.getComment(new Comment().coid(coid));
+        if (comment == null) return new ApiResult<Comment>().code(ApiResultStatus.Error).message("评论不存在").toString();
+        if (!Objects.equals(comment.authorId(), user.uid()))
+        {
+            return new ApiResult<Comment>().code(ApiResultStatus.Error).message("没有权限删除该评论").toString();
+        }
+        return commentService.deleteComment(new Comment().coid(coid)).toString();
+
+    }
+
 
     private ApiResult<Comment> fillComment(Map<String, String> map, Comment comment) {
         if (comment == null) comment = new Comment();
@@ -110,7 +142,9 @@ public class CommentController extends BaseController {
             if (StringTools.User.isUserName(authorName))
             {
                 comment.authorName(authorName);
-            }else{
+            }
+            else
+            {
                 return new ApiResult<Comment>().code(ApiResultStatus.Error).message("authorName 错误");
             }
         }

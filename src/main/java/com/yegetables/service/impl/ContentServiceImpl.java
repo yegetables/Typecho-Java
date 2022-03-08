@@ -76,9 +76,10 @@ public class ContentServiceImpl extends BaseServiceImpl implements ContentServic
             if (result.code() == ApiResultStatus.Success) return result.data();
             newContent = contentMapper.getContentBySlug(content.slug());
         }
+
+        if (token == null || newContent == null) return null;
         UserServiceImpl.removeSecrets(newContent.author());
         newContent.author(null);
-        if (token == null || newContent == null) return null;
         token = getTokenByCid(newContent.cid());
         redisTemplate.opsForValue().set(token, newContent, 6, TimeUnit.HOURS);
         token = getTokenBySlug(newContent.slug());

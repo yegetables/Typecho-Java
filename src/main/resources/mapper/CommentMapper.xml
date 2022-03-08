@@ -211,9 +211,10 @@
         <include refid="findCondition"/>
     </delete>
 
-    <select id="getAllCommentsByContentSlug" resultType="com.yegetables.pojo.Comment">
+    <select id="getAllCommentsByContentSlug" resultMap="commentsResultMap">
         select *
-        from typecho_comments
-        where slug = #{slug}
+        from typecho_comments,typecho_contents
+        where typecho_contents.slug = #{slug}
+        and typecho_comments.cid = typecho_contents.cid
     </select>
 </mapper>

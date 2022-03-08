@@ -31,11 +31,13 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
         //comtent
         comment.content(contentService.getContent(comment.content()));
         if (comment.content() == null) return new ApiResult<Comment>().code(ApiResultStatus.Error).message("评论文章不存在");
-        if (comment.content().author() == null) comment.content().toString();
+        if (!comment.content().allowComment())
+            return new ApiResult<Comment>().code(ApiResultStatus.Error).message("评论文章不允许评论");
+        //        if (comment.content().author() == null) comment.content().toString();
         //owner
-        if (comment.content().author() == null)
-            return new ApiResult<Comment>().code(ApiResultStatus.Error).message("评论文章作者不存在");
-        comment.owner(comment.content().author());
+        //        if (comment.content().author() == null)
+        //            return new ApiResult<Comment>().code(ApiResultStatus.Error).message("评论文章作者不存在");
+        comment.owner(comment.content().author());//可以为null
         try
         {
             commentMapper.addComment(comment);
@@ -95,7 +97,15 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
         List<Comment> list;
         if (content == null || (content.cid() == null && content.slug() == null))
             return new ApiResult<List<Comment>>().code(ApiResultStatus.Error).message("cid或者 slug不能为空");
-        list = commentMapper.getAllCommentsByContent(content);
+        content = contentService.getContent(content);
+        if (content == null) return new ApiResult<List<Comment>>().code(ApiResultStatus.Error).message("文章不存在");
+        try
+        {
+            list = commentMapper.getAllCommentsByContent(content);
+        } catch (Exception e)
+        {
+            return new ApiResult<List<Comment>>().code(ApiResultStatus.Error).message("获取评论失败");
+        }
         //        redisTemplate.opsForList().leftPushAll(getToken(content.cid()), list);TODO
         return new ApiResult<List<Comment>>().code(ApiResultStatus.Success).message("获取评论成功").data(list);
     }
