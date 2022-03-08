@@ -1,31 +1,32 @@
+application.name=Typecho_Java
 # 数据库连接
 jdbc.username=root
 jdbc.password=123456
-jdbc.database=singleBlog
-jdbc.host=localhost
+jdbc.database=test_typecho
+jdbc.host=127.0.0.1
 jdbc.port=3306
-jdbc.jdbcUrl=jdbc:mysql://${jdbc.host}:${jdbc.port}/${jdbc.database}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+jdbc.jdbcUrl=jdbc:mysql://${jdbc.host}:${jdbc.port}/${jdbc.database}?useUnicode=true;characterEncoding=UTF-8;useSSL=false;serverTimezone=UTC
 jdbc.driverClassName=com.mysql.cj.jdbc.Driver
 jdbc.initialSize=10
 jdbc.maxActive=10
 jdbc.maxWait=2000
 # 发信邮箱
-host=smtp.126.com
-username=ajian1234@126.com
-password=123456
-subject=Typecho-Java AuthCode
-defaultEncoding=UTF-8
-port=465
+mail.host=smtp.126.com
+mail.username=abc@126.com
+mail.password=123456
+mail.subject=Typecho-Java AuthCode
+mail.defaultEncoding=utf-8
+mail.port=465
 # redis配置
 redis.host=127.0.0.1
 redis.port=6379
 redis.password=
 redis.pool.maxIdle=300
 redis.pool.minIdle=100
-redis.pool.maxWaitMillis=10000
+redis.pool.maxWaitMillis=50000
 redis.pool.maxTotal=500
 redis.pool.testOnBorrow=true
-# 用户配置
+# 字段配置
 user.AuthCode.Length=8
 user.Name.MaxLength=32
 user.Name.MinLength=0
@@ -41,3 +42,4 @@ user.Group.MaxLength=32
 user.Group.MinLength=-1
 #user.Email.MaxLength=0
 #user.Email.MinLength=0
+
