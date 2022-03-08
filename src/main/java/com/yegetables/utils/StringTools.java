@@ -1,9 +1,6 @@
 package com.yegetables.utils;
 
-import com.yegetables.pojo.ContentStatus;
-import com.yegetables.pojo.ContentType;
-import com.yegetables.pojo.MetaType;
-import com.yegetables.pojo.UserGroup;
+import com.yegetables.pojo.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -47,7 +44,7 @@ public class StringTools {
         } catch (Exception e)
         {
             log.warn("mapGetLongKey error, key: {}, value: {}, error: {}", key, str, e.getMessage());
-            return 0L;
+            return -1L;
         }
     }
 
@@ -249,9 +246,9 @@ public class StringTools {
             return false;
         }
 
-        public static ContentType getType(String type) {
+        public static CommentType getType(String type) {
             type = toOkString(type);
-            for (ContentType temp : ContentType.values())
+            for (CommentType temp : CommentType.values())
             {
                 if (temp.name().equals(type)) return temp;
             }
@@ -262,11 +259,11 @@ public class StringTools {
             return getType(type) != null;
         }
 
-        public static ContentStatus getStatus(String status) {
+        public static CommentStatus getStatus(String status) {
             status = toOkString(status);
-            for (ContentStatus temp : ContentStatus.values())
+            for (CommentStatus temp : CommentStatus.values())
             {
-                if (temp.getValue().equals(status)) return temp;
+                if (temp.name().equals(status)) return temp;
             }
             return null;
         }

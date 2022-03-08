@@ -210,4 +210,10 @@
         from typecho_comments
         <include refid="findCondition"/>
     </delete>
+
+    <select id="getAllCommentsByContentSlug" resultType="com.yegetables.pojo.Comment">
+        select *
+        from typecho_comments
+        where slug = #{slug}
+    </select>
 </mapper>

@@ -62,16 +62,15 @@ public class Comment implements Serializable {
     /**
      * 评论类型
      */
-    private String type = "comment";
+    private CommentType type = CommentType.comment;
     /**
      * 评论状态
      */
-    private String status = "approved";
+    private CommentStatus status = CommentStatus.approved;
     /**
      * 父级评论
      */
     private Comment parent;
-
 
 
     public Long getCoid() {
@@ -159,6 +158,22 @@ public class Comment implements Serializable {
         return agent;
     }
 
+    public CommentType getType() {
+        return type;
+    }
+
+    public void setType(CommentType type) {
+        this.type = type;
+    }
+
+    public CommentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CommentStatus status) {
+        this.status = status;
+    }
+
     public Comment setAgent(String agent) {
         this.agent = agent;
         return this;
@@ -173,23 +188,6 @@ public class Comment implements Serializable {
         return this;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public Comment setType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public Comment setStatus(String status) {
-        this.status = status;
-        return this;
-    }
 
     public Comment getParent() {
         return parent;

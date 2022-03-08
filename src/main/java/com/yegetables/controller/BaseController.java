@@ -1,5 +1,6 @@
 package com.yegetables.controller;
 
+import com.yegetables.service.CommentService;
 import com.yegetables.service.ContentService;
 import com.yegetables.service.MetaService;
 import com.yegetables.service.UserService;
@@ -16,6 +17,8 @@ public class BaseController {
     protected MetaService metaService;
     @Autowired
     protected ContentService  contentService;
+    @Autowired
+    protected CommentService commentService;
 
     @Autowired
     protected JsonTools jsonTools;

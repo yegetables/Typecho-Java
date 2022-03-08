@@ -1,6 +1,7 @@
 package com.yegetables.dao;
 
 import com.yegetables.pojo.Comment;
+import com.yegetables.pojo.CommentStatus;
 import com.yegetables.utils.BaseJunit5Test;
 import com.yegetables.utils.RandomTools;
 import com.yegetables.utils.TimeTools;
@@ -45,6 +46,7 @@ class CommentMapperTest extends BaseJunit5Test {
         comment.url(RandomTools.getRandomUrl());
         comment.text(RandomTools.getRandomText(10));
         comment.created(TimeTools.NowTime());
+        comment.status(CommentStatus.approved);
         comment.owner(comment.content().author());
         comment.parent(RandomTools.getRandom(commentMapper.getAllComments()));
         assertEquals(1, commentMapper.addComment(comment));
