@@ -43,7 +43,7 @@
 
 > 在`src\main\resources\`目录下将文件`log4j2.xml`中 `第11行` 关于 `  <property name="basePath">D:\Typecho-Java\src\main\resources\log</property> `更改为 `${web:rootDir}/log`或 参考注释配置本机路径 。
 
-4. 前后端交互接口参考文档 [暂时未空]()  ,须明确使用 `application/json` 协议。
+4. 前后端交互接口参考文档 [typecho-java 文档](https://docs.apipost.cn/preview/38772114944f6047/a6b1ca166d0d419b)  ,须明确使用 `application/json` 协议。
 
 ## 参考资料
 
